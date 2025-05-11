@@ -3,8 +3,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 SplashScreen.preventAutoHideAsync();
@@ -15,20 +15,33 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  const [hasVisited, setHasVisited] = useState(false);
+  const [checkingVisit, setCheckingVisit] = useState(true);
+
   useEffect(() => {
-    if (loaded) {
+    const checkVisit = async () => {
+      const name = await AsyncStorage.getItem('@user_name');
+      setHasVisited(!!name);
+      setCheckingVisit(false);
+    };
+    checkVisit();
+  }, []);
+
+  useEffect(() => {
+    if (loaded && !checkingVisit) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, checkingVisit]);
 
-  if (!loaded) {
-    return null;
+  if (!loaded || checkingVisit) {
+    return null; // Optional: Add a custom loading/splash screen here
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        {!hasVisited && <Stack.Screen name="landing" />}
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
