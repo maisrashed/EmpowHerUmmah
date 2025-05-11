@@ -160,11 +160,8 @@ const styles = StyleSheet.create({
   icon: {
     width: 175,
     height: 70,
-    borderColor: COLORS.accentPurple,
     marginTop: 5,
     marginRight: 265,
-    borderRadius: 40,
-    borderWidth: 2,
   },
   title: {
     fontSize: 24,
