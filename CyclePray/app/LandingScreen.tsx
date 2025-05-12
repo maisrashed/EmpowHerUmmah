@@ -12,7 +12,7 @@ export default function LandingScreen() {
     if (name.trim() === '') return;
     try {
       await AsyncStorage.setItem('@user_name', name);
-      navigation.navigate('(tabs)'); // Navigate directly to your main app tabs
+      navigation.navigate('(tabs src)');
     } catch (error) {
       console.error('Error saving name:', error);
     }

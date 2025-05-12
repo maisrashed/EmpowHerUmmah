@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -34,14 +35,14 @@ export default function RootLayout() {
   }, [loaded, checkingVisit]);
 
   if (!loaded || checkingVisit) {
-    return null; // Optional: Add a custom loading/splash screen here
+    return null; // Optional: Add a custom loading indicator here
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        {!hasVisited && <Stack.Screen name="landing" />}
-        <Stack.Screen name="(tabs)" />
+        {!hasVisited && <Stack.Screen name="LandingScreen" />}
+        <Stack.Screen name="(tabs src)" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

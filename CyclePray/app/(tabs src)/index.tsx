@@ -69,13 +69,12 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header Section */}
       <View style={styles.header}>
         <Image source={require('../../assets/images/icon.png')} style={styles.icon} />
         <Text style={styles.title}>Your Calendar, Noor</Text>
       </View>
 
-      {/* Calendar */}
+
       <Calendar
         onDayPress={handleDayPress}
         markedDates={markedDates}
