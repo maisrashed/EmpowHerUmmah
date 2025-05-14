@@ -26,6 +26,13 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
+        name="homepage"
+        options={{
+          title: 'Homepage',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendar',
