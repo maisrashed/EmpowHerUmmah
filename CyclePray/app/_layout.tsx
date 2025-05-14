@@ -1,54 +1,32 @@
+// app/_layout.tsx
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, Redirect } from 'expo-router';
+import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+
+  const [fontsLoaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  const [hasVisited, setHasVisited] = useState(false);
-  const [checkingVisit, setCheckingVisit] = useState(true);
-
   useEffect(() => {
-    const checkVisit = async () => {
-      const name = await AsyncStorage.getItem('@user_name');
-      setHasVisited(!!name);
-      setCheckingVisit(false);
-    };
-    checkVisit();
-  }, []);
-
-  useEffect(() => {
-    if (loaded && !checkingVisit) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, checkingVisit]);
+  }, [fontsLoaded]);
 
-  if (!loaded || checkingVisit) {
-    return null; // Optional loading indicator
-  }
-
-  // 🚨 Use Redirect for initial flow control
-  if (!hasVisited) {
-    return <Redirect href="/LandingScreen" />;
-  }
+  if (!fontsLoaded) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs src)" />
-        <Stack.Screen name="LandingScreen" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <Slot />
       <StatusBar style="auto" />
     </ThemeProvider>
   );
