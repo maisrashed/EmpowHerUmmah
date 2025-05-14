@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+
 import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
@@ -13,7 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NotebookScreen({ navigation }) {
-    const router = useRouter();
+  const router = useRouter();
   const [selectedFeeling, setSelectedFeeling] = useState(null);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [note, setNote] = useState('');
@@ -71,7 +72,14 @@ export default function NotebookScreen({ navigation }) {
     { label: 'Sad', emoji: '😭' },
     { label: 'Angry', emoji: '😠' },
     { label: 'Tired', emoji: '🥱' },
+    { label: 'Anxious', emoji: '😟' },
+    { label: 'Overwhelmed', emoji: '😵‍💫' },
+    { label: 'Excited', emoji: '🤩' },
+    { label: 'Content', emoji: '😌' },
+    { label: 'Lonely', emoji: '😔' },
+    { label: 'Motivated', emoji: '💪' }
   ];
+
   const flows = [
     { label: 'Light', emoji: '💧' },
     { label: 'Medium', emoji: '💦' },
@@ -84,90 +92,97 @@ export default function NotebookScreen({ navigation }) {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: '#F3E8FF' }}
-      contentContainerStyle={{ padding: 20, paddingTop: 50, paddingBottom: 100 }}
+      style={{ flex: 1, backgroundColor: '#EFEAFF' }}
+      contentContainerStyle={{ padding: 20, paddingTop: 60, paddingBottom: 100 }}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
         <Image source={require('../../assets/images/icon.png')} style={styles.logo} />
         <Text style={styles.title}>Your Notebook, Noor</Text>
+        <Text style={styles.subtitle}>a soft place to land 🌸</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>How are you feeling?</Text>
-        <View style={styles.row}>
-          {feelings.map(({ label, emoji }) => (
+      <View style={styles.cardShadowWrapper}>
+        <View style={styles.cardGradient}>
+          <Text style={styles.cardTitle}>How are you feeling?</Text>
+          <View style={styles.row}>
+            {feelings.map(({ label, emoji }) => (
+              <TouchableOpacity
+                key={label}
+                style={[styles.emojiBox, selectedFeeling === label && styles.selected]}
+                onPress={() => setSelectedFeeling(label)}
+              >
+                <Text style={styles.emoji}>{emoji}</Text>
+                <Text style={styles.emojiLabel}>{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.cardShadowWrapper}>
+        <View style={styles.cardGradient}>
+          <Text style={styles.cardTitle}>How is your flow today?</Text>
+          <View style={styles.row}>
+            {flows.map(({ label, emoji }) => (
+              <TouchableOpacity
+                key={label}
+                style={[styles.emojiBox, selectedFlow === label && styles.selected]}
+                onPress={() => setSelectedFlow(label)}
+              >
+                <Text style={styles.emoji}>{emoji}</Text>
+                <Text style={styles.emojiLabel}>{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.cardShadowWrapper}>
+        <View style={styles.cardGradient}>
+          <Text style={styles.cardTitle}>Would you like to reflect?</Text>
+          <TextInput
+            style={styles.noteInput}
+            multiline
+            placeholder="Write a dua, thought, or emotion..."
+            value={note}
+            onChangeText={setNote}
+          />
+        </View>
+      </View>
+
+      <View style={styles.cardShadowWrapper}>
+        <View style={styles.cardGradient}>
+          <Text style={styles.cardTitle}>Today's Intentions</Text>
+          {Object.entries(intentions).map(([key, value]) => (
             <TouchableOpacity
-              key={label}
-              style={[styles.emojiBox, selectedFeeling === label && styles.selected]}
-              onPress={() => setSelectedFeeling(label)}
+              key={key}
+              style={styles.checkboxRow}
+              onPress={() => toggleIntention(key)}
             >
-              <Text style={styles.emoji}>{emoji}</Text>
-              <Text>{label}</Text>
+              <Text style={styles.checkbox}>{value ? '✅' : '⬜'} </Text>
+              <Text style={styles.intentLabel}>
+                {{
+                  reflection: 'Reflected on a verse',
+                  dhikr: 'Did dhikr',
+                  dua: 'Made dua with intention',
+                }[key]}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>How is your flow today?</Text>
-        <View style={styles.row}>
-          {flows.map(({ label, emoji }) => (
-            <TouchableOpacity
-              key={label}
-              style={[styles.emojiBox, selectedFlow === label && styles.selected]}
-              onPress={() => setSelectedFlow(label)}
-            >
-              <Text style={styles.emoji}>{emoji}</Text>
-              <Text>{label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Would you like to reflect?</Text>
-        <TextInput
-          style={styles.noteInput}
-          multiline
-          placeholder="Write a dua, thought, or emotion..."
-          value={note}
-          onChangeText={setNote}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Today's Intentions</Text>
-        {Object.entries(intentions).map(([key, value]) => (
-          <TouchableOpacity
-            key={key}
-            style={styles.checkboxRow}
-            onPress={() => toggleIntention(key)}
-          >
-            <Text style={styles.checkbox}>{value ? '✅' : '⬜'} </Text>
-            <Text style={styles.intentLabel}>
-              {{
-                reflection: 'Reflected on a verse',
-                dhikr: 'Did dhikr',
-                dua: 'Made dua with intention',
-              }[key]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      
 
       <TouchableOpacity onPress={saveSelections} style={styles.saveButton}>
-        <Text style={styles.saveText}>Save Entry</Text>
+        <Text style={styles.saveText}>💾 Save Entry</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-  onPress={() => router.push('/notebook/history')}
-  style={[styles.saveButton, { marginTop: 10 }]}
->
-  <Text style={styles.saveText}>View Past Entries</Text>
-</TouchableOpacity>
-
+        onPress={() => router.push('/notebook/history')}
+        style={[styles.saveButton, { marginTop: 10, backgroundColor: '#BFA3F5' }]}
+      >
+        <Text style={styles.saveText}>📘 View Past Entries</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -175,32 +190,44 @@ export default function NotebookScreen({ navigation }) {
 const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
+    marginBottom: 8,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 8,
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#5B21B6',
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
+  subtitle: {
+    fontSize: 14,
+    color: '#7C3AED',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  cardShadowWrapper: {
+    borderRadius: 22,
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  cardGradient: {
+    backgroundColor: '#fff',
+    borderRadius: 22,
+    padding: 20,
   },
   cardTitle: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 10,
+    fontWeight: '700',
+    fontSize: 18,
+    marginBottom: 12,
+    color: '#4C1D95',
   },
   row: {
     flexDirection: 'row',
@@ -209,29 +236,35 @@ const styles = StyleSheet.create({
   },
   emojiBox: {
     alignItems: 'center',
-    padding: 10,
-    borderRadius: 12,
+    padding: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#DDD6FE',
-    backgroundColor: '#F9F5FF',
-    width: 70,
-    margin: 5,
+    backgroundColor: '#F3E8FF',
+    width: 80,
+    margin: 6,
   },
   selected: {
-    backgroundColor: '#C4B5FD',
-    borderColor: '#8B5CF6',
+    backgroundColor: '#D8B4FE',
+    borderColor: '#A78BFA',
   },
   emoji: {
-    fontSize: 28,
+    fontSize: 32,
+  },
+  emojiLabel: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#4B0082',
   },
   noteInput: {
     backgroundColor: '#F3E8FF',
-    padding: 10,
-    borderRadius: 10,
+    padding: 14,
+    borderRadius: 12,
     borderColor: '#D8B4FE',
     borderWidth: 1,
     textAlignVertical: 'top',
-    minHeight: 80,
+    minHeight: 100,
+    fontSize: 14,
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -243,7 +276,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   intentLabel: {
-    fontSize: 14,
+    fontSize: 15,
   },
   saveButton: {
     backgroundColor: '#8B5CF6',
