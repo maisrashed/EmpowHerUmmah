@@ -26,31 +26,31 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
-        name="index"
+        name="calendar"
         options={{
           title: 'Calendar',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar.circle.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="resources"
         options={{
           title: 'Resources',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.closed.fill" color={color} />, 
         }}
       />
       <Tabs.Screen
         name="notebook"
         options={{
           title: 'Notebook',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="checklist" color={color} />, 
         }}
       />
       <Tabs.Screen
-        name="chatbot"
+        name="worship"
         options={{
-          title: 'Chatbot',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="bubble.left.and.bubble.right.fill" color={color} />, 
+          title: 'Worship',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="moon.stars.fill" color={color} />, 
         }}
       />
     </Tabs>
