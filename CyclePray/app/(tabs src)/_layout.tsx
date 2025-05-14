@@ -19,16 +19,14 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-          },
+          ios: { position: 'absolute' },
           default: {},
         }),
       }}>
       <Tabs.Screen
-        name="homepage"
+        name="home"
         options={{
-          title: 'Homepage',
+          title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
@@ -43,21 +41,21 @@ export default function TabLayout() {
         name="resources"
         options={{
           title: 'Resources',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.closed.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.closed.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="notebook"
         options={{
           title: 'Notebook',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="checklist" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="checklist" color={color} />,
         }}
       />
       <Tabs.Screen
         name="worship"
         options={{
           title: 'Worship',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="moon.stars.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="moon.stars.fill" color={color} />,
         }}
       />
     </Tabs>
