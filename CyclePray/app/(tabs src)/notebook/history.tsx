@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,22 +9,25 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function NotebookHistory() {
   const [entries, setEntries] = useState([]);
   const HISTORY_KEY = '@notebook_history';
   const router = useRouter();
 
-  useEffect(() => {
-    const loadHistory = async () => {
-      const raw = await AsyncStorage.getItem(HISTORY_KEY);
-      if (raw) {
-        const data = JSON.parse(raw);
-        setEntries(data);
-      }
-    };
-    loadHistory();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const loadHistory = async () => {
+        const raw = await AsyncStorage.getItem(HISTORY_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          setEntries(data);
+        }
+      };
+      loadHistory();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <View style={styles.entryCard}>
@@ -62,7 +65,6 @@ export default function NotebookHistory() {
     >
       <Text style={styles.title}>📘 Past Notebook Entries</Text>
 
-      {/* ⬆️ Moved button right under the title */}
       <TouchableOpacity
         onPress={() => router.replace('/notebook')}
         style={styles.backButton}

@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   ScrollView,
   View,
@@ -12,9 +11,11 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function NotebookScreen({ navigation }) {
+export default function NotebookScreen() {
   const router = useRouter();
+
   const [selectedFeeling, setSelectedFeeling] = useState(null);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [note, setNote] = useState('');
@@ -29,19 +30,15 @@ export default function NotebookScreen({ navigation }) {
   const NOTE_KEY = '@reflection_note';
   const HISTORY_KEY = '@notebook_history';
 
-  useEffect(() => {
-    const loadData = async () => {
-      const [f, fl, n] = await Promise.all([
-        AsyncStorage.getItem(FEELING_KEY),
-        AsyncStorage.getItem(FLOW_KEY),
-        AsyncStorage.getItem(NOTE_KEY),
-      ]);
-      if (f) setSelectedFeeling(f);
-      if (fl) setSelectedFlow(fl);
-      if (n) setNote(n);
-    };
-    loadData();
-  }, []);
+  // Reset all fields every time the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      setSelectedFeeling(null);
+      setSelectedFlow(null);
+      setNote('');
+      setIntentions({ reflection: false, dhikr: false, dua: false });
+    }, [])
+  );
 
   const saveSelections = async () => {
     try {
@@ -77,7 +74,7 @@ export default function NotebookScreen({ navigation }) {
     { label: 'Excited', emoji: '🤩' },
     { label: 'Content', emoji: '😌' },
     { label: 'Lonely', emoji: '😔' },
-    { label: 'Motivated', emoji: '💪' }
+    { label: 'Motivated', emoji: '💪' },
   ];
 
   const flows = [
@@ -102,6 +99,7 @@ export default function NotebookScreen({ navigation }) {
         <Text style={styles.subtitle}>a soft place to land 🌸</Text>
       </View>
 
+      {/* Feeling */}
       <View style={styles.cardShadowWrapper}>
         <View style={styles.cardGradient}>
           <Text style={styles.cardTitle}>How are you feeling?</Text>
@@ -120,6 +118,7 @@ export default function NotebookScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Flow */}
       <View style={styles.cardShadowWrapper}>
         <View style={styles.cardGradient}>
           <Text style={styles.cardTitle}>How is your flow today?</Text>
@@ -138,6 +137,7 @@ export default function NotebookScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Reflection Note */}
       <View style={styles.cardShadowWrapper}>
         <View style={styles.cardGradient}>
           <Text style={styles.cardTitle}>Would you like to reflect?</Text>
@@ -151,6 +151,7 @@ export default function NotebookScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Intentions */}
       <View style={styles.cardShadowWrapper}>
         <View style={styles.cardGradient}>
           <Text style={styles.cardTitle}>Today's Intentions</Text>
@@ -173,6 +174,7 @@ export default function NotebookScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Save + History Buttons */}
       <TouchableOpacity onPress={saveSelections} style={styles.saveButton}>
         <Text style={styles.saveText}>💾 Save Entry</Text>
       </TouchableOpacity>

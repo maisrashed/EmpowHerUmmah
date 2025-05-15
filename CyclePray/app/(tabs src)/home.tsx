@@ -1,81 +1,171 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const [mood, setMood] = useState('');
-  const [flow, setFlow] = useState('');
+  const router = useRouter();
+
+  const greetings = [
+    'As-salamu alaikum, Noor 🌸',
+    'Peace be upon you, Noor 🌷',
+    'Welcome back, Noor 🌺',
+    'Hey Noor 🧕 Ready to recharge?',
+    'May your day be soft and sacred 🌼',
+    'Salam Noor! You’re doing amazing 💫',
+    'Welcome, lovely soul 🌿',
+    'Noor, you are light in motion 🕊️',
+    'Hi Noor! Your softness is your strength ✨',
+    'You’re enough, Noor 🤍',
+    'So glad you’re here 🌙',
+    'Welcome back, beautiful 🌸',
+    'You are safe here, Noor 💐',
+    'Hey hey Noor! 🌞',
+    'Your journey is valid and sacred 📿',
+  ];
+  const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+  const verses = [
+    '"Indeed, with hardship comes ease." — Qur\'an 94:6',
+    '"And He found you lost and guided [you]." — Qur\'an 93:7',
+    '"Unquestionably, by the remembrance of Allah hearts are assured." — Qur\'an 13:28',
+    '"Verily, after every difficulty there is relief." — Qur\'an 94:5',
+    '"So remember Me; I will remember you." — Qur\'an 2:152',
+    '"My mercy encompasses all things." — Qur\'an 7:156',
+    '"He is with you wherever you are." — Qur\'an 57:4',
+    '"Do not despair of the mercy of Allah." — Qur\'an 39:53',
+    '"Your Lord has not forsaken you." — Qur\'an 93:3',
+    '"Allah does not burden a soul beyond that it can bear." — Qur\'an 2:286',
+    '"He knows what is within the hearts." — Qur\'an 11:5',
+    '"Put your trust in Allah." — Qur\'an 3:159',
+    '"He created you in stages." — Qur\'an 71:14',
+    '"He is the best of planners." — Qur\'an 3:54',
+    '"And We know what his soul whispers to him." — Qur\'an 50:16',
+  ];
+  const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+
+  const careTips = [
+    'Breathe deeply for 10 seconds 🫧',
+    'Rest your jaw and shoulders 🌿',
+    'Sip something warm 🥣',
+    'Grant yourself permission to slow down 🕊️',
+    'Take 3 mindful breaths 🌬️',
+    'Stretch your arms ☁️',
+    'Drink a full glass of water 💧',
+    'Text someone comforting 🫂',
+    'Blanket + eye rest 🛌',
+    'Light a candle & recite a du’a 🕯️',
+    'Smile at yourself in the mirror 😌',
+    'Name 3 blessings 🍃',
+    'Open a window for fresh air 🌬️',
+    'Pause multitasking. Just be 🌙',
+    'Whisper a peace-giving du’a 📿',
+  ];
+  const randomTip = careTips[Math.floor(Math.random() * careTips.length)];
+
+  const worshipReminders = [
+    "You’re still deeply connected to Allah — even when you’re not praying. Du’a, dhikr, and intention are powerful forms of worship 💞",
+    "Every whisper of du’a reaches the One who hears all 📿",
+    "Your rest can be an act of worship when paired with gratitude 🌙",
+    "Silent dhikr still polishes the heart ✨",
+    "Allah sees the tears you don’t explain 🤲",
+    "You're worshiping by just trying, even in small ways 💖",
+    "Your heart turning toward Allah is worship itself 💫",
+    "Even your pain is not lost on Allah — keep going 🤍",
+    "Praying with a heavy heart is still prayer 🕊️",
+    "Your cycle is sacred. Honor it. Reflect. You are still beloved 💐",
+  ];
+  const randomWorshipReminder = worshipReminders[Math.floor(Math.random() * worshipReminders.length)];
+
+  const justForMeOptions = [
+    '✨ Close your eyes and take 3 deep breaths.',
+    '📿 Say “Alhamdulillah” for something tiny.',
+    '📝 Journal: “What does my body need today?”',
+    '💖 Reminder: Rest is a mercy, not a weakness.',
+    '📖 Listen to Surah Ad-Duha for comfort.',
+    '🕯️ Light a candle and be still.',
+    '🌧️ Sit by a window for 2 minutes.',
+    '🥰 Whisper: “I am worthy of gentleness.”',
+    '🙏 Hand on heart, say “Bismillah.”',
+    '🌺 Do nothing for 60 seconds — that’s enough.',
+    '📿 Say SubhanAllah 33 times.',
+    '🤲 Ask Allah for exactly what you need.',
+    '🌈 Imagine yourself wrapped in divine mercy.',
+    '🍯 Make yourself a tiny treat or tea.',
+    '🎧 Play your favourite Qur’an recitation.',
+  ];
+  const handleJustForMe = () => {
+    const msg = justForMeOptions[Math.floor(Math.random() * justForMeOptions.length)];
+    Alert.alert('Just for You 💌', msg);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Image source={require('../../assets/images/icon.png')} style={styles.icon} />
-        <Text style={styles.title}>Welcome Back, Noor!</Text>
-        <Text style={styles.subtitle}>May your day be peaceful and fulfilling 💖</Text>
+        <Text style={styles.title}>{randomGreeting}</Text>
+        <Text style={styles.subtitle}>{randomVerse}</Text>
       </View>
 
-      {/* Recent Activity */}
-      <LinearGradient colors={['#F3E8FF', '#E9D5FF']} style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <View style={styles.activityRow}>
-          <TouchableOpacity style={styles.activityCard}>
-            <Text style={styles.activityLabel}>Last Dua Recited</Text>
-            <LinearGradient colors={['#8B5CF6', '#BFA2DB']} style={styles.gradientButton}>
-              <Text style={styles.buttonText}>+ Click Me</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.activityCard}>
-            <Text style={styles.activityLabel}>Last Dhikr Length</Text>
-            <Text style={styles.activityValue}>10 min</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-
-      {/* Mood Section */}
-      <LinearGradient colors={['#F3E8FF', '#E9D5FF']} style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>How are you feeling?</Text>
-        <View style={styles.moodRow}>
-          {['😊 Happy', '😔 Sad', '😡 Angry', '😴 Tired'].map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={[
-                styles.moodCard,
-                mood === item && { borderColor: COLORS.deepPurple },
+      <View style={styles.quickLinks}>
+        {[
+          { label: 'Notebook', emoji: '📝', link: '/notebook' },
+          { label: 'Resources', emoji: '📚', link: '/resources' },
+          { label: 'Worship', emoji: '🌙', link: '/worship' },
+          { label: 'Your Cycle', emoji: '🧕', link: '/calendar' },
+        ].map(({ label, emoji, link }) => (
+          <LinearGradient
+            key={label}
+            colors={['#EBDCFD', '#D7C4F1']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.linkGradient}
+          >
+            <Pressable
+              onPress={() => router.push(link)}
+              style={({ pressed, hovered }) => [
+                styles.linkCard,
+                pressed && styles.linkPressed,
+                hovered && styles.linkHover,
               ]}
-              onPress={() => setMood(item)}
             >
-              <Text style={styles.moodText}>{item}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </LinearGradient>
+              <Text style={styles.linkEmoji}>{emoji}</Text>
+              <Text style={styles.linkText}>{label}</Text>
+            </Pressable>
+          </LinearGradient>
+        ))}
+      </View>
 
-      {/* Flow Section */}
-      <LinearGradient colors={['#F3E8FF', '#E9D5FF']} style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>How is your flow today?</Text>
-        <View style={styles.moodRow}>
-          {['💧 Light', '💧💧 Medium', '💧💧💧 Heavy'].map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={[
-                styles.moodCard,
-                flow === item && { borderColor: COLORS.deepPurple },
-              ]}
-              onPress={() => setFlow(item)}
-            >
-              <Text style={styles.moodText}>{item}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </LinearGradient>
+      <View style={{ alignItems: 'center' }}>
+        <LinearGradient colors={['#CDB5F6', '#B89DEB']}style={styles.tipCard}>
+          <Text style={styles.tipTitle}>🧴 Self-Care Tip</Text>
+          <Text style={styles.tipText}>{randomTip}</Text>
+        </LinearGradient>
+      </View>
+
+      <View style={{ alignItems: 'center' }}>
+      <LinearGradient colors={['#BFA2F2', '#A98BEF']} style={styles.tipCard}>
+      <Text style={styles.tipTitle}>🌙 Worship Reminder</Text>
+          <Text style={styles.tipText}>{randomWorshipReminder}</Text>
+        </LinearGradient>
+      </View>
+
+      <Pressable style={styles.justForMeButton} onPress={handleJustForMe}>
+        <Text style={styles.justForMeText}>🎁 Just for Me</Text>
+      </Pressable>
     </ScrollView>
   );
 }
 
 const COLORS = {
-  primaryPurple: '#BFA2DB',
-  accentPurple: '#D8B4FE',
   deepPurple: '#8B5CF6',
   lightBackground: '#F3E8FF',
   textDark: '#333333',
@@ -92,88 +182,101 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   icon: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     resizeMode: 'contain',
     marginBottom: 10,
   },
   title: {
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: '700',
     color: COLORS.textDark,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
     color: COLORS.textDark,
-    marginTop: 5,
+    marginTop: 8,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
-  sectionCard: {
-    borderRadius: 20,
-    padding: 20,
+  quickLinks: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     marginBottom: 30,
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
   },
-  sectionTitle: {
+  linkGradient: {
+    width: '48%',
+    borderRadius: 20,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 3,
+    borderColor: '#D8B4FE'
+  },
+  linkCard: {
+    borderRadius: 24,
+    paddingVertical: 30,
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkPressed: {
+    transform: [{ scale: 0.97 }],
+    opacity: 0.8,
+  },
+  linkHover: {
+    backgroundColor: '#F3F4F6',
+  },
+  linkEmoji: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  linkText: {
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.textDark,
-    marginBottom: 15,
   },
-  activityRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  tipCard: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 24,
+    padding: 22,
+    marginBottom: 22,
+    shadowColor: '#B794F4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  activityCard: {
-    width: '48%',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    padding: 15,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  activityLabel: {
-    fontSize: 14,
+  tipTitle: {
+    fontSize: 20,
+    fontWeight: '700',
     color: COLORS.textDark,
     marginBottom: 10,
     textAlign: 'center',
   },
-  activityValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.deepPurple,
-  },
-  gradientButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  moodRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-  },
-  moodCard: {
-    width: '47%',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    padding: 15,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    marginBottom: 15,
-  },
-  moodText: {
-    fontSize: 16,
+  tipText: {
+    fontSize: 18,
     color: COLORS.textDark,
+    lineHeight: 22,
     textAlign: 'center',
+  },
+  justForMeButton: {
+    backgroundColor: COLORS.deepPurple,
+    paddingVertical: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 40,
+  },
+  justForMeText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
