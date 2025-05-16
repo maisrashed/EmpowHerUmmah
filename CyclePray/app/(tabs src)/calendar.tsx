@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-na
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState({});
   const [showResumeReminder, setShowResumeReminder] = useState(false);
   const STORAGE_KEY = '@period_marked_dates';
+  const router = useRouter();
 
   const periodColors = ['#8B5CF6', '#A78BFA', '#C4B5FD', '#A78BFA', '#8B5CF6'];
 
@@ -29,7 +31,9 @@ export default function CalendarScreen() {
   const saveMarkedDates = async () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(markedDates));
-      Alert.alert('Success', 'Your period data has been saved.');
+      Alert.alert('Success', 'Your period data has been saved.', [
+        { text: 'OK', onPress: () => router.push('/summary') }
+      ]);
     } catch (error) {
       console.error('Failed to save dates:', error);
     }
@@ -41,7 +45,6 @@ export default function CalendarScreen() {
     const colorIndex = Math.min(currentPeriodDays, periodColors.length - 1);
     const selectedColor = periodColors[colorIndex];
 
-    // Hide the prayer resume reminder when marking a new period day
     setShowResumeReminder(false);
 
     setMarkedDates((prev) => {
@@ -74,7 +77,6 @@ export default function CalendarScreen() {
         <Text style={styles.title}>Your Calendar, Noor</Text>
       </View>
 
-
       <Calendar
         onDayPress={handleDayPress}
         markedDates={markedDates}
@@ -92,7 +94,6 @@ export default function CalendarScreen() {
         }}
       />
 
-      {/* Banner Section */}
       {Object.keys(markedDates).length > 0 && !showResumeReminder && (
         <View style={styles.banner}>
           <Text style={styles.bannerText}>
@@ -109,27 +110,15 @@ export default function CalendarScreen() {
         </View>
       )}
 
-      {/* "I've Finished My Period" Button */}
       <TouchableOpacity onPress={handleFinishPeriod} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
-        <LinearGradient
-          colors={['#A78BFA', '#C4B5FD']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.finishButton}
-        >
+        <LinearGradient colors={['#A78BFA', '#C4B5FD']} style={styles.finishButton}>
           <Text style={styles.finishButtonText}>I've Finished My Period</Text>
         </LinearGradient>
       </TouchableOpacity>
 
-      {/* Save Data Button */}
       <TouchableOpacity onPress={saveMarkedDates} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
-        <LinearGradient
-          colors={['#8B5CF6', '#BFA2DB']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.saveButton}
-        >
-          <Text style={styles.saveButtonText}>Save My Period Data</Text>
+        <LinearGradient colors={['#8B5CF6', '#BFA2DB']} style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save & View Period Data</Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>
@@ -137,11 +126,8 @@ export default function CalendarScreen() {
 }
 
 const COLORS = {
-  primaryPurple: '#BFA2DB',
-  accentPurple: '#D8B4FE',
   deepPurple: '#8B5CF6',
   lightBackground: '#F3E8FF',
-  neutralGray: '#E0E0E0',
   textDark: '#333333',
 };
 
@@ -191,32 +177,20 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
-    shadowColor: '#A78BFA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   finishButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-    letterSpacing: 0.5,
   },
   saveButton: {
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 5,
   },
   saveButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-    letterSpacing: 0.5,
   },
 });

@@ -180,7 +180,7 @@ export default function NotebookScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => router.push('/notebook/history')}
+        onPress={() => router.push('/history')}
         style={[styles.saveButton, { marginTop: 10, backgroundColor: '#BFA3F5' }]}
       >
         <Text style={styles.saveText}>📘 View Past Entries</Text>
