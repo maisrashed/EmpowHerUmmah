@@ -4,10 +4,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import {
+  useFonts as usePlayfairFonts,
+  PlayfairDisplay_700Bold,
+} from '@expo-google-fonts/playfair-display';
+
+import {
+  useFonts as usePoppinsFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
+} from '@expo-google-fonts/poppins';
+
 export default function SummaryScreen() {
   const [monthlySummary, setMonthlySummary] = useState({});
   const STORAGE_KEY = '@period_marked_dates';
   const router = useRouter();
+
+  const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
+  const [poppinsLoaded] = usePoppinsFonts({ Poppins_400Regular, Poppins_600SemiBold });
 
   useEffect(() => {
     loadSummary();
@@ -21,7 +35,7 @@ export default function SummaryScreen() {
         const summary = {};
 
         Object.keys(markedDates).forEach((dateStr) => {
-          const month = dateStr.slice(0, 7); // Format: YYYY-MM
+          const month = dateStr.slice(0, 7);
           summary[month] = (summary[month] || 0) + 1;
         });
 
@@ -31,6 +45,8 @@ export default function SummaryScreen() {
       console.error('Failed to load summary:', error);
     }
   };
+
+  if (!playfairLoaded || !poppinsLoaded) return null;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -47,7 +63,6 @@ export default function SummaryScreen() {
         ))
       )}
 
-      {/* Back to Calendar Button */}
       <TouchableOpacity 
         onPress={() => router.push('/calendar')} 
         style={{ borderRadius: 30, overflow: 'hidden', marginTop: 30 }}
@@ -74,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'PlayfairDisplay_700Bold',
     marginBottom: 60,
     marginTop: 70,
     color: '#333',
@@ -82,6 +97,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
     color: '#666',
     textAlign: 'center',
     marginTop: 40,
@@ -96,11 +112,12 @@ const styles = StyleSheet.create({
   },
   monthText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
     color: '#8B5CF6',
   },
   daysText: {
     fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
     color: '#555',
     marginTop: 5,
   },
@@ -119,6 +136,6 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
 });

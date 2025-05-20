@@ -253,8 +253,8 @@ const COLORS = {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.lightBackground },
   header: { alignItems: 'center', marginVertical: 20 },
-  title: { fontSize: 26,  marginTop: 40, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.textDark },
-  subtitle: { fontSize: 14, fontFamily: 'Poppins_400Regular', color: COLORS.deepPurple, marginTop: 4, fontStyle: 'italic' },
+  title: { fontSize: 26,  marginTop: 50, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.textDark },
+  subtitle: { fontSize: 14, fontFamily: 'Poppins_400Regular', color: COLORS.deepPurple, marginTop: 6, fontStyle: 'italic' },
   filterRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 16 },
   filterButton: { paddingVertical: 6, paddingHorizontal: 14, backgroundColor: '#E9D5FF', borderRadius: 20, margin: 4 },
   filterButtonActive: { backgroundColor: '#8B5CF6' },

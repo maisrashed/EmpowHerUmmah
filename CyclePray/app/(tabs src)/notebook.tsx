@@ -94,7 +94,6 @@ export default function NotebookScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
-        <Image source={require('../../assets/images/icon.png')} style={styles.logo} />
         <Text style={styles.title}>Your Notebook, Noor</Text>
         <Text style={styles.subtitle}>a soft place to land 🌸</Text>
       </View>

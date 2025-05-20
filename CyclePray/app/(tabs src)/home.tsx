@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,40 +9,63 @@ import {
   ScrollView,
   ImageBackground,
 } from 'react-native';
-import AppLoading from 'expo-app-loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 
-import { 
-  useFonts as usePlayfairFonts, 
-  PlayfairDisplay_700Bold 
+import {
+  useFonts as usePlayfairFonts,
+  PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
 
-import { 
-  useFonts as usePoppinsFonts, 
-  Poppins_400Regular, 
-  Poppins_600SemiBold 
+import {
+  useFonts as usePoppinsFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
 } from '@expo-google-fonts/poppins';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [missedDays, setMissedDays] = useState(0);
+  const [totalDays, setTotalDays] = useState(10);
+  const STORAGE_KEY = '@period_marked_dates';
 
-  const [playfairLoaded] = usePlayfairFonts({
-    PlayfairDisplay_700Bold,
-  });
+  const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
+  const [poppinsLoaded] = usePoppinsFonts({ Poppins_400Regular, Poppins_600SemiBold });
 
-  const [poppinsLoaded] = usePoppinsFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const markedDates = JSON.parse(savedData);
+          const summary = {};
+
+          Object.keys(markedDates).forEach((dateStr) => {
+            const month = dateStr.slice(0, 7);
+            summary[month] = (summary[month] || 0) + 1;
+          });
+
+          const sortedMonths = Object.keys(summary).sort((a, b) => b.localeCompare(a));
+          if (sortedMonths.length > 0) {
+            const latest = sortedMonths[0];
+            setMissedDays(summary[latest]);
+            const daysInMonth = new Date(`${latest}-01`).getMonth() === 1 ? 28 : 30;
+            setTotalDays(daysInMonth);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load summary:', error);
+      }
+    };
+
+    loadSummary();
+  }, []);
 
   if (!playfairLoaded || !poppinsLoaded) {
-    return <AppLoading />;
+    return null;
   }
-
-  const missedDays = 5;
-  const totalDays = 10;
 
   return (
     <ImageBackground
@@ -58,10 +81,8 @@ export default function HomeScreen() {
           <Text style={styles.subtitle}>“So remember Me; I will remember you.” — Qur'an 2:152</Text>
         </View>
 
-        {/* Prayer Missed Counter */}
         <PrayerMissedCounter missedDays={missedDays} totalDays={totalDays} />
 
-        {/* Modern Quick Links */}
         <View style={styles.quickLinks}>
           {[
             { label: 'Notebook', emoji: '📝', link: '/notebook' },
@@ -78,10 +99,7 @@ export default function HomeScreen() {
             >
               <Pressable
                 onPress={() => router.push(link)}
-                style={({ pressed }) => [
-                  styles.linkCard,
-                  pressed && styles.linkPressed,
-                ]}
+                style={({ pressed }) => [styles.linkCard, pressed && styles.linkPressed]}
               >
                 <View style={styles.iconBubble}>
                   <Text style={styles.linkEmoji}>{emoji}</Text>
@@ -92,7 +110,10 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.justForMeButton} onPress={() => Alert.alert('Just for You 💌', 'Take a deep breath and smile!')}>
+        <Pressable
+          style={styles.justForMeButton}
+          onPress={() => Alert.alert('Just for You 💌', 'Take a deep breath and smile!')}
+        >
           <Text style={styles.justForMeText}>🎁 Just for Me</Text>
         </Pressable>
       </ScrollView>
@@ -100,7 +121,6 @@ export default function HomeScreen() {
   );
 }
 
-/* Prayer Missed Counter Component */
 function PrayerMissedCounter({ missedDays, totalDays }) {
   const radius = 90;
   const strokeWidth = 15;
