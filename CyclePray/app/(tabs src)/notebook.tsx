@@ -1,17 +1,27 @@
-import { useRouter } from 'expo-router';
+// Modern, elegant, and aesthetic NotebookScreen for women-focused UI
 import React, { useState, useCallback } from 'react';
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableOpacity,
   TextInput,
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+
+import {
+  useFonts as usePlayfairFonts,
+  PlayfairDisplay_700Bold,
+} from '@expo-google-fonts/playfair-display';
+import {
+  useFonts as usePoppinsFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
+} from '@expo-google-fonts/poppins';
 
 export default function NotebookScreen() {
   const router = useRouter();
@@ -19,18 +29,16 @@ export default function NotebookScreen() {
   const [selectedFeeling, setSelectedFeeling] = useState(null);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [note, setNote] = useState('');
-  const [intentions, setIntentions] = useState({
-    reflection: false,
-    dhikr: false,
-    dua: false,
-  });
+  const [intentions, setIntentions] = useState({ reflection: false, dhikr: false, dua: false });
 
   const FEELING_KEY = '@selected_feeling';
   const FLOW_KEY = '@selected_flow';
   const NOTE_KEY = '@reflection_note';
   const HISTORY_KEY = '@notebook_history';
 
-  // Reset all fields every time the screen is focused
+  const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
+  const [poppinsLoaded] = usePoppinsFonts({ Poppins_400Regular, Poppins_600SemiBold });
+
   useFocusEffect(
     useCallback(() => {
       setSelectedFeeling(null);
@@ -39,6 +47,29 @@ export default function NotebookScreen() {
       setIntentions({ reflection: false, dhikr: false, dua: false });
     }, [])
   );
+
+  const feelings = [
+    { label: 'Happy', emoji: '😊' },
+    { label: 'Sad', emoji: '😭' },
+    { label: 'Angry', emoji: '😠' },
+    { label: 'Tired', emoji: '🥱' },
+    { label: 'Anxious', emoji: '😟' },
+    { label: 'Overwhelmed', emoji: '😵‍💫' },
+    { label: 'Excited', emoji: '🤩' },
+    { label: 'Content', emoji: '😌' },
+    { label: 'Lonely', emoji: '😔' },
+    { label: 'Motivated', emoji: '💪' },
+  ];
+
+  const flows = [
+    { label: 'Light', emoji: '💧' },
+    { label: 'Medium', emoji: '💦' },
+    { label: 'Heavy', emoji: '🌊' },
+  ];
+
+  const toggleIntention = (key) => {
+    setIntentions({ ...intentions, [key]: !intentions[key] });
+  };
 
   const saveSelections = async () => {
     try {
@@ -64,197 +95,143 @@ export default function NotebookScreen() {
     }
   };
 
-  const feelings = [
-    { label: 'Happy', emoji: '😊' },
-    { label: 'Sad', emoji: '😭' },
-    { label: 'Angry', emoji: '😠' },
-    { label: 'Tired', emoji: '🥱' },
-    { label: 'Anxious', emoji: '😟' },
-    { label: 'Overwhelmed', emoji: '😵‍💫' },
-    { label: 'Excited', emoji: '🤩' },
-    { label: 'Content', emoji: '😌' },
-    { label: 'Lonely', emoji: '😔' },
-    { label: 'Motivated', emoji: '💪' },
-  ];
-
-  const flows = [
-    { label: 'Light', emoji: '💧' },
-    { label: 'Medium', emoji: '💦' },
-    { label: 'Heavy', emoji: '🌊' },
-  ];
-
-  const toggleIntention = (key) => {
-    setIntentions({ ...intentions, [key]: !intentions[key] });
-  };
+  if (!playfairLoaded || !poppinsLoaded) return null;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: '#EFEAFF' }}
-      contentContainerStyle={{ padding: 20, paddingTop: 60, paddingBottom: 100 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Notebook, Noor</Text>
-        <Text style={styles.subtitle}>a soft place to land 🌸</Text>
-      </View>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <Text style={styles.title}>Notebook</Text>
+      <Text style={styles.subtitle}>Reflect with gentleness 🌸</Text>
 
-      {/* Feeling */}
-      <View style={styles.cardShadowWrapper}>
-        <View style={styles.cardGradient}>
-          <Text style={styles.cardTitle}>How are you feeling?</Text>
-          <View style={styles.row}>
-            {feelings.map(({ label, emoji }) => (
-              <TouchableOpacity
-                key={label}
-                style={[styles.emojiBox, selectedFeeling === label && styles.selected]}
-                onPress={() => setSelectedFeeling(label)}
-              >
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.emojiLabel}>{label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-
-      {/* Flow */}
-      <View style={styles.cardShadowWrapper}>
-        <View style={styles.cardGradient}>
-          <Text style={styles.cardTitle}>How is your flow today?</Text>
-          <View style={styles.row}>
-            {flows.map(({ label, emoji }) => (
-              <TouchableOpacity
-                key={label}
-                style={[styles.emojiBox, selectedFlow === label && styles.selected]}
-                onPress={() => setSelectedFlow(label)}
-              >
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.emojiLabel}>{label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-
-      {/* Reflection Note */}
-      <View style={styles.cardShadowWrapper}>
-        <View style={styles.cardGradient}>
-          <Text style={styles.cardTitle}>Would you like to reflect?</Text>
-          <TextInput
-            style={styles.noteInput}
-            multiline
-            placeholder="Write a dua, thought, or emotion..."
-            value={note}
-            onChangeText={setNote}
-          />
-        </View>
-      </View>
-
-      {/* Intentions */}
-      <View style={styles.cardShadowWrapper}>
-        <View style={styles.cardGradient}>
-          <Text style={styles.cardTitle}>Today's Intentions</Text>
-          {Object.entries(intentions).map(([key, value]) => (
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>How are you feeling?</Text>
+        <View style={styles.gridWrap}>
+          {feelings.map(({ label, emoji }) => (
             <TouchableOpacity
-              key={key}
-              style={styles.checkboxRow}
-              onPress={() => toggleIntention(key)}
+              key={label}
+              style={[styles.emojiBox, selectedFeeling === label && styles.selectedBox]}
+              onPress={() => setSelectedFeeling(label)}
             >
-              <Text style={styles.checkbox}>{value ? '✅' : '⬜'} </Text>
-              <Text style={styles.intentLabel}>
-                {{
-                  reflection: 'Reflected on a verse',
-                  dhikr: 'Did dhikr',
-                  dua: 'Made dua with intention',
-                }[key]}
-              </Text>
+              <Text style={styles.emoji}>{emoji}</Text>
+              <Text style={styles.emojiLabel}>{label}</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
-      {/* Save + History Buttons */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>How is your flow today?</Text>
+        <View style={styles.gridWrap}>
+          {flows.map(({ label, emoji }) => (
+            <TouchableOpacity
+              key={label}
+              style={[styles.emojiBox, selectedFlow === label && styles.selectedBox]}
+              onPress={() => setSelectedFlow(label)}
+            >
+              <Text style={styles.emoji}>{emoji}</Text>
+              <Text style={styles.emojiLabel}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Would you like to reflect?</Text>
+        <TextInput
+          style={styles.noteInput}
+          multiline
+          placeholder="Write a dua, thought, or emotion..."
+          placeholderTextColor="#9B89B6"
+          value={note}
+          onChangeText={setNote}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Today's Intentions</Text>
+        {Object.entries(intentions).map(([key, value]) => (
+          <TouchableOpacity
+            key={key}
+            style={styles.checkboxRow}
+            onPress={() => toggleIntention(key)}
+          >
+            <Text style={styles.checkbox}>{value ? '☑️' : '⬜'}</Text>
+            <Text style={styles.intentLabel}>
+              {{ reflection: 'Reflected on a verse', dhikr: 'Did dhikr', dua: 'Made dua with intention' }[key]}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <TouchableOpacity onPress={saveSelections} style={styles.saveButton}>
         <Text style={styles.saveText}>💾 Save Entry</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => router.push('/history')}
-        style={[styles.saveButton, { marginTop: 10, backgroundColor: '#BFA3F5' }]}
-      >
-        <Text style={styles.saveText}>📘 View Past Entries</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    resizeMode: 'contain',
-    marginBottom: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F4FC',
+    padding: 20,
   },
   title: {
     fontSize: 26,
-    fontWeight: '800',
-    color: '#5B21B6',
+    fontFamily: 'PlayfairDisplay_700Bold',
+    color: '#4C1D95',
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
     color: '#7C3AED',
-    marginTop: 4,
+    textAlign: 'center',
+    marginBottom: 30,
     fontStyle: 'italic',
   },
-  cardShadowWrapper: {
-    borderRadius: 22,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  cardGradient: {
+  section: {
+    marginBottom: 24,
     backgroundColor: '#fff',
-    borderRadius: 22,
-    padding: 20,
+    padding: 16,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
   },
-  cardTitle: {
-    fontWeight: '700',
-    fontSize: 18,
+  sectionTitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#6B21A8',
     marginBottom: 12,
-    color: '#4C1D95',
   },
-  row: {
+  gridWrap: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'center',
   },
   emojiBox: {
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#DDD6FE',
-    backgroundColor: '#F3E8FF',
     width: 80,
-    margin: 6,
+    backgroundColor: '#F3E8FF',
+    padding: 12,
+    borderRadius: 14,
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  selected: {
+  selectedBox: {
     backgroundColor: '#D8B4FE',
-    borderColor: '#A78BFA',
+    borderWidth: 1.5,
+    borderColor: '#A855F7',
   },
   emoji: {
-    fontSize: 32,
+    fontSize: 28,
   },
   emojiLabel: {
-    marginTop: 4,
+    marginTop: 6,
     fontSize: 13,
+    fontFamily: 'Poppins_400Regular',
     color: '#4B0082',
   },
   noteInput: {
@@ -266,6 +243,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     minHeight: 100,
     fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -277,17 +255,21 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   intentLabel: {
-    fontSize: 15,
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: '#3B0764',
   },
   saveButton: {
     backgroundColor: '#8B5CF6',
-    borderRadius: 30,
     paddingVertical: 14,
+    borderRadius: 26,
     alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 40,
   },
   saveText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
 });
