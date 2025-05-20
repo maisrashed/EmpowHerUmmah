@@ -303,26 +303,26 @@ const resources = [
     description:
       'Faith-based insights and rulings about menstruation in Islam.',
     screen:
-      'https://yaqeeninstitute.org/read/paper/understanding-menstruation-in-islam',
+      'https://www.imana.org/wp-content/uploads/2019/12/MenstruationPart2-Updated.pdf',
     category: 'spiritual',
   },
   {
     title: 'Islamic Self-Care Practices',
     description: 'Holistic spiritual care from an Islamic perspective.',
-    screen: 'https://www.productivemuslim.com/self-care-in-islam/',
+    screen: 'https://masjideumar.co.uk/files/islamic-living/11-03-17_B.pdf',
     category: 'spiritual',
   },
   {
     title: 'Gratitude & Journaling Prompts',
     description: 'Faith-based journaling prompts to boost mindfulness.',
-    screen: 'https://muslimjournal.com/gratitude-journaling',
+    screen: 'https://4713562.fs1.hubspotusercontent-na1.net/hubfs/4713562/Website-Paper-PDFs/The%20Art%20of%20Gratitude_%20Quranic%20Themes%20on%20Shukr.pdf',
     category: 'spiritual',
   },
   {
     title: 'Can I Pray During My Period?',
     description: 'Understanding rulings & mindset when unable to pray.',
     screen:
-      'https://seekersguidance.org/answers/general-counsel/can-a-woman-pray-or-recite-the-quran-during-her-period/',
+      'https://maktabahassunnahblog.wordpress.com/wp-content/uploads/2015/11/islamic-rulings-on-menstruation-postpartum-condition.pdf',
     category: 'spiritual',
   },
   {
@@ -330,14 +330,14 @@ const resources = [
     description:
       'Ways to stay spiritually connected when you can’t perform prayer.',
     screen:
-      'https://quranacademy.io/blog/ways-to-stay-connected-to-allah-during-menstruation/',
+      'https://spiritualpc.net/wp-content/uploads/2020/02/69_keskinoglu.pdf',
     category: 'spiritual',
   },
   {
     title: 'Daily Dhikr & Affirmations',
     description:
       'Simple dhikr and positive statements to maintain inner peace.',
-    screen: 'https://quranicquotes.com/dhikr-phrases-from-quran/',
+    screen: 'https://dhikr.io/wp-content/uploads/2021/01/Powerful-Daily-Dhikr-Short.pdf',
     category: 'spiritual',
   },
 ];
