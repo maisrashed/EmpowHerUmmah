@@ -92,7 +92,6 @@ export default function ResourcesScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <Image source={require('../../assets/images/icon.png')} style={styles.icon} />
         <Text style={styles.title}>Resource Center</Text>
         <Text style={styles.subtitle}>nurture your body, mind & soul 🌸</Text>
       </View>
@@ -254,8 +253,7 @@ const COLORS = {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.lightBackground },
   header: { alignItems: 'center', marginVertical: 20 },
-  icon: { width: 65, height: 65, resizeMode: 'contain', marginBottom: 6 },
-  title: { fontSize: 26, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.textDark },
+  title: { fontSize: 26,  marginTop: 40, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.textDark },
   subtitle: { fontSize: 14, fontFamily: 'Poppins_400Regular', color: COLORS.deepPurple, marginTop: 4, fontStyle: 'italic' },
   filterRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 16 },
   filterButton: { paddingVertical: 6, paddingHorizontal: 14, backgroundColor: '#E9D5FF', borderRadius: 20, margin: 4 },

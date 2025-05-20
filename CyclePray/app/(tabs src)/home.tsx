@@ -165,10 +165,10 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   icon: {
-    width: 90,
-    height: 90,
-    resizeMode: 'contain',
-    marginBottom: 10,
+    width: 175,
+    height: 70,
+    marginTop: 5,
+    marginRight: 30,
   },
   title: {
     fontSize: 30,

@@ -1,15 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+
+import {
+  useFonts as usePlayfairFonts,
+  PlayfairDisplay_700Bold,
+} from '@expo-google-fonts/playfair-display';
+
+import {
+  useFonts as usePoppinsFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
+} from '@expo-google-fonts/poppins';
 
 export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState({});
   const [showResumeReminder, setShowResumeReminder] = useState(false);
   const STORAGE_KEY = '@period_marked_dates';
   const router = useRouter();
+
+  const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
+  const [poppinsLoaded] = usePoppinsFonts({ Poppins_400Regular, Poppins_600SemiBold });
 
   const periodColors = ['#8B5CF6', '#A78BFA', '#C4B5FD', '#A78BFA', '#8B5CF6'];
 
@@ -32,7 +53,7 @@ export default function CalendarScreen() {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(markedDates));
       Alert.alert('Success', 'Your period data has been saved.', [
-        { text: 'OK', onPress: () => router.push('/summary') }
+        { text: 'OK', onPress: () => router.push('/summary') },
       ]);
     } catch (error) {
       console.error('Failed to save dates:', error);
@@ -70,10 +91,11 @@ export default function CalendarScreen() {
     setShowResumeReminder(true);
   };
 
+  if (!playfairLoaded || !poppinsLoaded) return null;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/images/icon.png')} style={styles.icon} />
         <Text style={styles.title}>Your Calendar, Noor</Text>
       </View>
 
@@ -142,18 +164,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  icon: {
-    width: 175,
-    height: 70,
-    marginTop: 5,
-    marginRight: 265,
-  },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 26,
+    fontFamily: 'PlayfairDisplay_700Bold',
     color: COLORS.textDark,
     textAlign: 'center',
-    marginTop: -2,
+    marginTop: 40,
   },
   banner: {
     backgroundColor: '#EDE9FE',
@@ -172,6 +188,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: 'Poppins_400Regular',
   },
   finishButton: {
     paddingVertical: 15,
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
   finishButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
   saveButton: {
     paddingVertical: 15,
@@ -191,6 +208,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
 });

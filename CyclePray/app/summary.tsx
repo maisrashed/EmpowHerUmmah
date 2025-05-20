@@ -34,7 +34,7 @@ export default function SummaryScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>📅 Period Logs by Month</Text>
+      <Text style={styles.title}>Missed Day Logs by Month</Text>
 
       {Object.keys(monthlySummary).length === 0 ? (
         <Text style={styles.noDataText}>No period data logged yet.</Text>
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    marginBottom: 20,
+    marginBottom: 60,
+    marginTop: 70,
     color: '#333',
     textAlign: 'center',
   },
