@@ -8,6 +8,7 @@ import {
   ScrollView,
   Linking,
   FlatList,
+  ImageBackground,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,15 +19,14 @@ import {
   AntDesign,
 } from '@expo/vector-icons';
 
-import { 
-  useFonts as usePlayfairFonts, 
-  PlayfairDisplay_700Bold 
+import {
+  useFonts as usePlayfairFonts,
+  PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
-
-import { 
-  useFonts as usePoppinsFonts, 
-  Poppins_400Regular, 
-  Poppins_600SemiBold 
+import {
+  useFonts as usePoppinsFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
 } from '@expo-google-fonts/poppins';
 
 export default function ResourcesScreen() {
@@ -90,66 +90,73 @@ export default function ResourcesScreen() {
   if (!playfairLoaded || !poppinsLoaded) return null;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Resource Center</Text>
-        <Text style={styles.subtitle}>nurture your body, mind & soul 🌸</Text>
-      </View>
+    <ImageBackground
+      source={require('../../assets/images/clouds.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Resource Center</Text>
+          <Text style={styles.subtitle}>nurture your body, mind & soul 🌸</Text>
+        </View>
 
-      <View style={styles.filterRow}>
-        {categories.map((cat) => (
-          <TouchableOpacity
-            key={cat}
-            style={[styles.filterButton, activeCategory === cat && styles.filterButtonActive]}
-            onPress={() => setActiveCategory(cat)}
-          >
-            <Text style={[styles.filterText, activeCategory === cat && styles.filterTextActive]}>
-              {cat.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        <View style={styles.filterRow}>
+          {categories.map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.filterButton, activeCategory === cat && styles.filterButtonActive]}
+              onPress={() => setActiveCategory(cat)}
+            >
+              <Text style={[styles.filterText, activeCategory === cat && styles.filterTextActive]}>
+                {cat.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {['mental', 'spiritual'].map((category) => {
-        if (activeCategory !== 'all' && activeCategory !== category) return null;
-        const sectionResources = resources.filter((r) => r.category === category);
+        {['mental', 'spiritual'].map((category) => {
+          if (activeCategory !== 'all' && activeCategory !== category) return null;
+          const sectionResources = resources.filter((r) => r.category === category);
 
-        return (
-          <View key={category} style={styles.sectionWrapper}>
-            <Text style={styles.sectionTitle}>{category.toUpperCase()} WELLNESS</Text>
-            <FlatList
-              data={sectionResources}
-              keyExtractor={(item, index) => index.toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalList}
-              renderItem={({ item }) => (
-                <LinearGradient colors={['#EDE9FE', '#F5F3FF']} style={styles.resourceCard}>
-                  <View style={styles.cardHeader}>
-                    {renderIcon(item.category)}
-                    <Text style={styles.resourceCardTitle}>{item.title}</Text>
-                    <TouchableOpacity onPress={() => toggleFavorite(item.title)} style={styles.favoriteBtn}>
-                      <AntDesign
-                        name={isFavorited(item.title) ? 'heart' : 'hearto'}
-                        size={18}
-                        color={isFavorited(item.title) ? '#E11D48' : '#A78BFA'}
-                      />
+          return (
+            <View key={category} style={styles.sectionWrapper}>
+              <Text style={styles.sectionTitle}>{category.toUpperCase()} WELLNESS</Text>
+              <FlatList
+                data={sectionResources}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalList}
+                renderItem={({ item }) => (
+                  <LinearGradient colors={['#EDE9FE', '#F5F3FF']} style={styles.resourceCard}>
+                    <View style={styles.cardHeader}>
+                      {renderIcon(item.category)}
+                      <Text style={styles.resourceCardTitle}>{item.title}</Text>
+                      <TouchableOpacity onPress={() => toggleFavorite(item.title)} style={styles.favoriteBtn}>
+                        <AntDesign
+                          name={isFavorited(item.title) ? 'heart' : 'hearto'}
+                          size={18}
+                          color={isFavorited(item.title) ? '#E11D48' : '#A78BFA'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={styles.resourceCardDescription}>{item.description}</Text>
+                    <TouchableOpacity
+                      style={styles.resourceCardButton}
+                      onPress={() => item.screen.startsWith('http') ? Linking.openURL(item.screen) : navigation.navigate(item.screen)}
+                    >
+                      <Text style={styles.resourceCardButtonText}>Learn More</Text>
                     </TouchableOpacity>
-                  </View>
-                  <Text style={styles.resourceCardDescription}>{item.description}</Text>
-                  <TouchableOpacity
-                    style={styles.resourceCardButton}
-                    onPress={() => item.screen.startsWith('http') ? Linking.openURL(item.screen) : navigation.navigate(item.screen)}
-                  >
-                    <Text style={styles.resourceCardButtonText}>Learn More</Text>
-                  </TouchableOpacity>
-                </LinearGradient>
-              )}
-            />
-          </View>
-        );
-      })}
-    </ScrollView>
+                  </LinearGradient>
+                )}
+              />
+            </View>
+          );
+        })}
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
@@ -251,24 +258,113 @@ const COLORS = {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.lightBackground },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    zIndex: 0,
+  },
+  container: { flex: 1, backgroundColor: 'transparent' },
   header: { alignItems: 'center', marginVertical: 20 },
-  title: { fontSize: 26,  marginTop: 50, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.textDark },
-  subtitle: { fontSize: 14, fontFamily: 'Poppins_400Regular', color: COLORS.deepPurple, marginTop: 6, fontStyle: 'italic' },
-  filterRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 16 },
-  filterButton: { paddingVertical: 6, paddingHorizontal: 14, backgroundColor: '#E9D5FF', borderRadius: 20, margin: 4 },
-  filterButtonActive: { backgroundColor: '#8B5CF6' },
-  filterText: { fontFamily: 'Poppins_400Regular', fontWeight: '500', color: '#5B21B6' },
-  filterTextActive: { color: 'white' },
-  sectionWrapper: { marginBottom: 32 },
-  sectionTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.deepPurple, marginBottom: 12, marginTop: 20, marginLeft: '5%'},
-  horizontalList: { paddingHorizontal: 10, paddingBottom: 30 },
-  resourceCard: { width: 280, marginRight: 16, borderRadius: 18, padding: 20, shadowColor: '#000', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 3 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  iconLeft: { marginRight: 10 },
-  favoriteBtn: { marginLeft: 'auto', padding: 4 },
-  resourceCardTitle: { fontSize: 16, fontFamily: 'Poppins_600SemiBold', color: COLORS.textDark },
-  resourceCardDescription: { fontSize: 14, fontFamily: 'Poppins_400Regular', color: '#555', marginBottom: 12 },
-  resourceCardButton: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.deepPurple },
-  resourceCardButtonText: { color: '#fff', fontSize: 14, fontFamily: 'Poppins_600SemiBold' },
+  title: {
+    fontSize: 26,
+    marginTop: 50,
+    fontFamily: 'PlayfairDisplay_700Bold',
+    color: COLORS.textDark,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: COLORS.deepPurple,
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  filterButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    backgroundColor: '#E9D5FF',
+    borderRadius: 20,
+    margin: 4,
+  },
+  filterButtonActive: {
+    backgroundColor: '#8B5CF6',
+  },
+  filterText: {
+    fontFamily: 'Poppins_400Regular',
+    fontWeight: '500',
+    color: '#5B21B6',
+  },
+  filterTextActive: {
+    color: 'white',
+  },
+  sectionWrapper: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'PlayfairDisplay_700Bold',
+    color: COLORS.deepPurple,
+    marginBottom: 12,
+    marginTop: 20,
+    marginLeft: '5%',
+  },
+  horizontalList: {
+    paddingHorizontal: 10,
+    paddingBottom: 30,
+  },
+  resourceCard: {
+    width: 280,
+    marginRight: 16,
+    borderRadius: 18,
+    padding: 20,
+    shadowColor: 'black',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  iconLeft: {
+    marginRight: 10,
+  },
+  favoriteBtn: {
+    marginLeft: 'auto',
+    padding: 4,
+  },
+  resourceCardTitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: COLORS.textDark,
+  },
+  resourceCardDescription: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: '#555',
+    marginBottom: 12,
+  },
+  resourceCardButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: COLORS.deepPurple,
+  },
+  resourceCardButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Poppins_600SemiBold',
+  },
 });

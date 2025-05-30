@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ImageBackground,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -104,56 +105,63 @@ export default function CalendarScreen() {
   if (!playfairLoaded || !poppinsLoaded) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Calendar, {userName || '...'} </Text>
+    <ImageBackground
+      source={require('../../assets/images/clouds.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Your Calendar, {userName || '...'} </Text>
+        </View>
+
+        <Calendar
+          onDayPress={handleDayPress}
+          markedDates={markedDates}
+          theme={{
+            backgroundColor: COLORS.lightBackground,
+            calendarBackground: COLORS.lightBackground,
+            selectedDayBackgroundColor: COLORS.deepPurple,
+            todayTextColor: COLORS.deepPurple,
+            arrowColor: COLORS.deepPurple,
+            textMonthFontWeight: 'bold',
+            textDayFontSize: 16,
+            textMonthFontSize: 20,
+            dayTextColor: COLORS.textDark,
+            monthTextColor: COLORS.deepPurple,
+          }}
+        />
+
+        {Object.keys(markedDates).length > 0 && !showResumeReminder && (
+          <View style={styles.banner}>
+            <Text style={styles.bannerText}>
+              You are exempt from prayer during menstruation. 💖 Take care and stay spiritually connected.
+            </Text>
+          </View>
+        )}
+
+        {showResumeReminder && (
+          <View style={styles.bannerReminder}>
+            <Text style={styles.bannerText}>
+              🌸 It’s time to resume your prayers today, {userName || 'friend'}. May Allah accept them!
+            </Text>
+          </View>
+        )}
+
+        <TouchableOpacity onPress={handleFinishPeriod} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
+          <LinearGradient colors={['#A78BFA', '#C4B5FD']} style={styles.finishButton}>
+            <Text style={styles.finishButtonText}>I've Finished My Period</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={saveMarkedDates} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
+          <LinearGradient colors={['#8B5CF6', '#BFA2DB']} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Save & View Period Data</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
-
-      <Calendar
-        onDayPress={handleDayPress}
-        markedDates={markedDates}
-        theme={{
-          backgroundColor: COLORS.lightBackground,
-          calendarBackground: COLORS.lightBackground,
-          selectedDayBackgroundColor: COLORS.deepPurple,
-          todayTextColor: COLORS.deepPurple,
-          arrowColor: COLORS.deepPurple,
-          textMonthFontWeight: 'bold',
-          textDayFontSize: 16,
-          textMonthFontSize: 20,
-          dayTextColor: COLORS.textDark,
-          monthTextColor: COLORS.deepPurple,
-        }}
-      />
-
-      {Object.keys(markedDates).length > 0 && !showResumeReminder && (
-        <View style={styles.banner}>
-          <Text style={styles.bannerText}>
-            You are exempt from prayer during menstruation. 💖 Take care and stay spiritually connected.
-          </Text>
-        </View>
-      )}
-
-      {showResumeReminder && (
-        <View style={styles.bannerReminder}>
-          <Text style={styles.bannerText}>
-            🌸 It’s time to resume your prayers today, {userName || 'friend'}. May Allah accept them!
-          </Text>
-        </View>
-      )}
-
-      <TouchableOpacity onPress={handleFinishPeriod} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
-        <LinearGradient colors={['#A78BFA', '#C4B5FD']} style={styles.finishButton}>
-          <Text style={styles.finishButtonText}>I've Finished My Period</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={saveMarkedDates} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 20 }}>
-        <LinearGradient colors={['#8B5CF6', '#BFA2DB']} style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Save & View Period Data</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -164,9 +172,19 @@ const COLORS = {
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    zIndex: 0,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightBackground,
+    backgroundColor: 'transparent',
     padding: 20,
     paddingTop: 40,
   },

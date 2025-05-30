@@ -1,4 +1,3 @@
-// Modern, elegant, and aesthetic NotebookScreen for women-focused UI
 import React, { useState, useCallback } from 'react';
 import {
   ScrollView,
@@ -10,6 +9,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -100,106 +100,125 @@ export default function NotebookScreen() {
   if (!playfairLoaded || !poppinsLoaded) return null;
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
+    <ImageBackground
+      source={require('../../assets/images/clouds.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
     >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[styles.content, { flexGrow: 1 }]}
-        showsVerticalScrollIndicator={false}
+      <View style={styles.overlay} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
       >
-        <Text style={styles.title}>Notebook</Text>
-        <Text style={styles.subtitle}>Reflect with gentleness 🌸</Text>
+       <ScrollView
+  contentContainerStyle={[styles.content, { paddingTop:70 }]}
+  showsVerticalScrollIndicator={false}
+  keyboardShouldPersistTaps="handled"
+>
+          <Text style={styles.title}>Notebook</Text>
+          <Text style={styles.subtitle}>Reflect with gentleness 🌸</Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>How are you feeling?</Text>
-          <View style={styles.gridWrap}>
-            {feelings.map(({ label, emoji }) => (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>How are you feeling?</Text>
+            <View style={styles.gridWrap}>
+              {feelings.map(({ label, emoji }) => (
+                <TouchableOpacity
+                  key={label}
+                  style={[styles.emojiBox, selectedFeeling === label && styles.selectedBox]}
+                  onPress={() => setSelectedFeeling(label)}
+                >
+                  <Text style={styles.emoji}>{emoji}</Text>
+                  <Text style={styles.emojiLabel}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>How is your flow today?</Text>
+            <View style={styles.gridWrap}>
+              {flows.map(({ label, emoji }) => (
+                <TouchableOpacity
+                  key={label}
+                  style={[styles.emojiBox, selectedFlow === label && styles.selectedBox]}
+                  onPress={() => setSelectedFlow(label)}
+                >
+                  <Text style={styles.emoji}>{emoji}</Text>
+                  <Text style={styles.emojiLabel}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Would you like to reflect?</Text>
+            <TextInput
+              style={styles.noteInput}
+              multiline
+              placeholder="Write a dua, thought, or emotion..."
+              placeholderTextColor="#9B89B6"
+              value={note}
+              onChangeText={setNote}
+            />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Today's Intentions</Text>
+            {Object.entries(intentions).map(([key, value]) => (
               <TouchableOpacity
-                key={label}
-                style={[styles.emojiBox, selectedFeeling === label && styles.selectedBox]}
-                onPress={() => setSelectedFeeling(label)}
+                key={key}
+                style={styles.checkboxRow}
+                onPress={() => toggleIntention(key)}
               >
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.emojiLabel}>{label}</Text>
+                <Text style={styles.checkbox}>{value ? '☑️' : '⬜'}</Text>
+                <Text style={styles.intentLabel}>
+                  {{ reflection: 'Reflected on a verse', dhikr: 'Did dhikr', dua: 'Made dua with intention' }[key]}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>How is your flow today?</Text>
-          <View style={styles.gridWrap}>
-            {flows.map(({ label, emoji }) => (
-              <TouchableOpacity
-                key={label}
-                style={[styles.emojiBox, selectedFlow === label && styles.selectedBox]}
-                onPress={() => setSelectedFlow(label)}
-              >
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.emojiLabel}>{label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+          <TouchableOpacity onPress={saveSelections} style={styles.saveButton}>
+            <Text style={styles.saveText}>💾 Save Entry</Text>
+          </TouchableOpacity>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Would you like to reflect?</Text>
-          <TextInput
-            style={styles.noteInput}
-            multiline
-            placeholder="Write a dua, thought, or emotion..."
-            placeholderTextColor="#9B89B6"
-            value={note}
-            onChangeText={setNote}
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Today's Intentions</Text>
-          {Object.entries(intentions).map(([key, value]) => (
-            <TouchableOpacity
-              key={key}
-              style={styles.checkboxRow}
-              onPress={() => toggleIntention(key)}
-            >
-              <Text style={styles.checkbox}>{value ? '☑️' : '⬜'}</Text>
-              <Text style={styles.intentLabel}>
-                {{ reflection: 'Reflected on a verse', dhikr: 'Did dhikr', dua: 'Made dua with intention' }[key]}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <TouchableOpacity onPress={saveSelections} style={styles.saveButton}>
-          <Text style={styles.saveText}>💾 Save Entry</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push('../history')}
-          style={styles.viewButton}
-        >
-          <Text style={styles.viewText}>📜 View Past Entries</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <TouchableOpacity
+            onPress={() => router.push('../history')}
+            style={styles.viewButton}
+          >
+            <Text style={styles.viewText}>📜 View Past Entries</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    zIndex: 0,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8F4FC',
+    backgroundColor: 'transparent',
   },
   content: {
-    padding: 20,
+    flexGrow: 1,
+    paddingTop: 10,
+    paddingHorizontal: 20,
     paddingBottom: 100,
   },
   title: {
     fontSize: 26,
     fontFamily: 'PlayfairDisplay_700Bold',
-    color: '#4C1D95',
+    color: 'black',
     textAlign: 'center',
   },
   subtitle: {
@@ -212,7 +231,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
-    backgroundColor: '#fff',
+    backgroundColor:"rgba(188, 146, 233, 0.22)",
     padding: 16,
     borderRadius: 20,
     shadowColor: '#000',
@@ -243,7 +262,6 @@ const styles = StyleSheet.create({
   },
   selectedBox: {
     backgroundColor: '#D8B4FE',
-    borderWidth: 1.5,
     borderColor: '#A855F7',
   },
   emoji: {
