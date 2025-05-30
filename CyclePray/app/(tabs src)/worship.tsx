@@ -19,7 +19,7 @@ export default function WorshipMenuScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Worship Center</Text>
+      <Text style={styles.title}>Your Worship Center, {userName || 'friend'}</Text>
       <Text style={styles.subtitle}>gentle ways to stay spiritually connected 💫</Text>
 
       <View style={styles.grid}>
@@ -94,6 +94,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.textDark,
     fontWeight: '600',
-    textAlign: 'center',
-  },
-});
+    t

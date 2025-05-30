@@ -1,4 +1,3 @@
-// app/index.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,24 +8,23 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkVisited = async () => {
-      const name = await AsyncStorage.getItem('@user_name');
-
-      if (name) {
-        router.replace('/(tabs src)/home'); // or your preferred default tab
-      } else {
-        router.replace('/LandingScreen');
+    const checkFirstLaunch = async () => {
+      try {
+        const hasLaunched = await AsyncStorage.getItem('@has_launched_before');
+        if (hasLaunched === 'true') {
+          router.replace('/(tabs src)/home');
+        } else {
+          router.replace('/landing'); 
+        }
+      } catch (error) {
+        console.error('Error checking first launch:', error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
-    checkVisited();
+    checkFirstLaunch();
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size="large" />
-    </View>
-  );
-}
+    <View style

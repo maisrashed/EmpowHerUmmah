@@ -21,9 +21,10 @@ export default function LandingScreen() {
     if (name.trim() === '') return;
     try {
       await AsyncStorage.setItem('@user_name', name);
+      await AsyncStorage.setItem('@has_launched_before', 'true'); // ✅ Set launch flag
       navigation.navigate('(tabs src)');
     } catch (error) {
-      console.error('Error saving name:', error);
+      console.error('Error saving name or launch status:', error);
     }
   };
 
