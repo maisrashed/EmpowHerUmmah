@@ -275,4 +275,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconBubble: {
-    backgroundColor
+    backgroundColor: '#F3E8FF',
+    borderRadius: 50,
+    padding: 14,
+    marginBottom: 12,
+    shadowColor: '#B794F4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  linkEmoji: {
+    fontSize: 24,
+  },
+  linkText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    color: COLORS.textDark,
+  },
+  justForMeButton: {
+    backgroundColor: COLORS.deepPurple,
+    paddingVertical: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 40,
+  },
+  justForMeText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+});
