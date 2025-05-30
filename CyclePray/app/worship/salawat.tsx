@@ -1,9 +1,17 @@
-// Full Salawat page code with long & short entries
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-const SALAWAT_KEY = '@favorite_salawat';
 
 const salawatList = [
   // Short Salawat
@@ -115,72 +123,77 @@ const salawatList = [
   }
 ];
 
-export default function SalawatPage() {
-    const [faves, setFaves] = useState([]);
-    const [showFavesOnly, setShowFavesOnly] = useState(false);
-  
-    /* ─ Load favourites once ─ */
-    useEffect(() => {
-      AsyncStorage.getItem(SALAWAT_KEY).then((d) => {
-        if (d) setFaves(JSON.parse(d));
-      });
-    }, []);
-  
-    /* ─ Toggle on long-press ─ */
-    const toggleFav = async (item) => {
-      const updated = faves.some((f) => f.name === item.name)
-        ? faves.filter((f) => f.name !== item.name)
-        : [item, ...faves];
-  
-      setFaves(updated);
-      await AsyncStorage.setItem(SALAWAT_KEY, JSON.stringify(updated));
-    };
-  
-    const isFav = (item) => faves.some((f) => f.name === item.name);
-  
-    const list = showFavesOnly
-      ? faves
-      : [...faves, ...salawatList.filter((s) => !isFav(s))];
-  
-    /* ---------------------------------------------------------------- */
-  
-    return (
+export default function SalawatScreen() {
+  const [favorites, setFavorites] = useState([]);
+  const [showFavesOnly, setShowFavesOnly] = useState(false);
+  const [search, setSearch] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    AsyncStorage.getItem('@favorite_salawat').then((data) => {
+      if (data) setFavorites(JSON.parse(data));
+    });
+  }, []);
+
+  const toggleFavorite = async (item) => {
+    const updated = favorites.some(f => f.name === item.name)
+      ? favorites.filter(f => f.name !== item.name)
+      : [item, ...favorites];
+
+    setFavorites(updated);
+    await AsyncStorage.setItem('@favorite_salawat', JSON.stringify(updated));
+  };
+
+  const isFav = (item) => favorites.some(f => f.name === item.name);
+
+  const filtered = salawatList.filter(
+    (s) =>
+      (!showFavesOnly || isFav(s)) &&
+      (s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.transliteration.toLowerCase().includes(search.toLowerCase()) ||
+        s.meaning.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightBg }}>
       <View style={styles.container}>
-        <Text style={styles.title}>🌙 Salawāt</Text>
-        <Text style={styles.instructions}>
-          Long-press to pin a favourite ❤️
-        </Text>
-  
-        <TouchableOpacity
-          style={styles.filterBtn}
-          onPress={() => setShowFavesOnly((p) => !p)}
-        >
-          <Text style={styles.filterTxt}>
-            {showFavesOnly ? 'Show All' : 'Show Favourites Only'}
-          </Text>
+        <TouchableOpacity onPress={() => router.push('/worship')} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={18} color="#7C3AED" />
+          <Text style={styles.backButtonText}>Back to Worship</Text>
         </TouchableOpacity>
-  
+
+        <Text style={styles.title}>Salawat List</Text>
+        <Text style={styles.instructions}>Long-press to pin a favourite ❤️</Text>
+
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search salawat..."
+          placeholderTextColor="#A78BFA"
+          value={search}
+          onChangeText={setSearch}
+        />
+
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setShowFavesOnly(p => !p)}>
+          <Text style={styles.filterTxt}>{showFavesOnly ? 'Show All' : 'Show Favourites Only'}</Text>
+        </TouchableOpacity>
+
         <FlatList
-          data={list}
+          data={filtered}
           keyExtractor={(item) => item.name}
           contentContainerStyle={{ paddingBottom: 28 }}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onLongPress={() => toggleFav(item)}
-              style={[
-                styles.card,
-                isFav(item) && styles.cardFav,
-              ]}
+              onLongPress={() => toggleFavorite(item)}
+              style={[styles.card, isFav(item) && styles.cardFav]}
             >
-              {/* Heart badge */}
               {isFav(item) && <Text style={styles.heart}>❤️</Text>}
-  
-              <Text style={styles.name}>✨ {item.name}</Text>
+
+              <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.arabic}>{item.arabic}</Text>
               <Text style={styles.translit}>{item.transliteration}</Text>
               <Text style={styles.meaning}>{item.meaning}</Text>
-  
-              {/* Virtue pill */}
+
               <View style={styles.badge}>
                 <Text style={styles.badgeTxt}>{item.virtue}</Text>
               </View>
@@ -188,75 +201,120 @@ export default function SalawatPage() {
           )}
         />
       </View>
-    );
-  }
-  
-  /* ------------------------------------------------------------------ */
-  /*  STYLE                                                              */
-  /* ------------------------------------------------------------------ */
-  
-  const COLORS = {
-    deepPurple: '#7C3AED',
-    lavender: '#EBDFF9',
-    lightBg: '#FFF5FD',
-    cardBg: '#FFFFFF',
-    cardAlt: '#FFFAF0',
-  };
-  
-  const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.lightBg, padding: 20 },
-  
-    title: { fontSize: 24, fontWeight: 'bold', color: COLORS.deepPurple },
-    instructions: {
-      fontSize: 13,
-      fontStyle: 'italic',
-      color: '#6D28D9',
-      marginBottom: 14,
-    },
-  
-    filterBtn: {
-      alignSelf: 'flex-start',
-      backgroundColor: COLORS.lavender,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 20,
-      marginBottom: 18,
-    },
-    filterTxt: { color: COLORS.deepPurple, fontWeight: '600' },
-  
-    card: {
-      position: 'relative',
-      backgroundColor: COLORS.cardBg,
-      borderRadius: 14,
-      padding: 18,
-      marginBottom: 16,
-  
-      shadowColor: '#BFA2DB',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
-      elevation: 3,
-    },
-    cardFav: { backgroundColor: COLORS.cardAlt },
-  
-    heart: {
-      position: 'absolute',
-      top: 10,
-      right: 12,
-      fontSize: 18,
-    },
-  
-    name: { fontSize: 18, fontWeight: '600', marginBottom: 6 },
-    arabic: { fontSize: 20, textAlign: 'right', marginBottom: 6 },
-    translit: { fontStyle: 'italic', color: '#666', marginBottom: 6 },
-    meaning: { marginBottom: 10 },
-  
-    badge: {
-      alignSelf: 'flex-start',
-      backgroundColor: COLORS.lavender,
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 14,
-    },
-    badgeTxt: { fontSize: 12, color: COLORS.deepPurple, fontWeight: '600' },
-  });
+    </SafeAreaView>
+  );
+}
+
+const COLORS = {
+  deepPurple: '#7C3AED',
+  lavender: '#EBDFF9',
+  lightBg: '#FFF5FD',
+  cardBg: '#FFFFFF',
+  cardAlt: '#FFF8FF',
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.lavender,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backButtonText: {
+    color: COLORS.deepPurple,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: COLORS.deepPurple,
+    marginBottom: 6,
+  },
+  instructions: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: '#6D28D9',
+    marginBottom: 14,
+  },
+  searchInput: {
+    backgroundColor: COLORS.lavender,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    marginBottom: 12,
+    color: '#4B0082',
+  },
+  filterBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.lavender,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 18,
+  },
+  filterTxt: {
+    color: COLORS.deepPurple,
+    fontWeight: '600',
+  },
+  card: {
+    position: 'relative',
+    backgroundColor: COLORS.cardBg,
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: '#BFA2DB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardFav: { backgroundColor: COLORS.cardAlt },
+  heart: {
+    position: 'absolute',
+    top: 10,
+    right: 12,
+    fontSize: 18,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4B0082',
+    marginBottom: 8,
+  },
+  arabic: {
+    fontSize: 20,
+    textAlign: 'right',
+    marginBottom: 6,
+    color: '#222',
+  },
+  translit: {
+    fontStyle: 'italic',
+    color: '#666',
+    marginBottom: 6,
+  },
+  meaning: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 10,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.lavender,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 14,
+  },
+  badgeTxt: {
+    fontSize: 12,
+    color: COLORS.deepPurple,
+    fontWeight: '600',
+  },
+});

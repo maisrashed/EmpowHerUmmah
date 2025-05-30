@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 const dhikrItems = [
   { text: "SubhanAllah (33x)", arabic: "سُبْحَانَ ٱللَّٰه", type: "praise" },
@@ -13,8 +23,8 @@ const dhikrItems = [
   { text: "Ya Rahman, Ya Raheem", arabic: "يَا رَحْمَٰنُ، يَا رَحِيم", type: "names" },
   { text: "Ya Allah, forgive me", arabic: "يَا ٱللّٰهُ اغْفِرْ لِي", type: "forgiveness" },
   { text: "Ya Lateef, make it easy for me", arabic: "يَا لَطِيفُ، يَسِّرْ لِي", type: "ease" },
-  { text: "SubhanAllahi wa bihamdihi", arabic: "سُبْحَانَ ٱللَّهِ وَبِحَمْدِهِ", type: "praise" },
-  { text: "SubhanAllahi-l-azeem", arabic: "سُبْحَانَ ٱللَّهِ الْعَظِيمِ", type: "praise" },
+  { text: "SubhanAllahi wa bihamdihi", arabic: "سُبْحَانَ ٱللَّّهِ وَبِحَمْدِهِ", type: "praise" },
+  { text: "SubhanAllahi-l-azeem", arabic: "سُبْحَانَ ٱللَّّهِ الْعَظِيمِ", type: "praise" },
   { text: "Bismillah", arabic: "بِسْمِ ٱللَّٰهِ", type: "beginning" },
   { text: "Ya Fattah, open doors for me", arabic: "يَا فَتَّاحُ، ٱفْتَحْ لِي أَبْوَابَ ٱلْخَيْرِ", type: "openness" },
   { text: "Ya Salam, envelope me in peace", arabic: "يَا سَلَامُ، ٱحُطْنِي بِٱلسَّلَامِ", type: "peace" },
@@ -25,6 +35,8 @@ const dhikrItems = [
 export default function DhikrScreen() {
   const [favorites, setFavorites] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     AsyncStorage.getItem('@favorite_dhikr').then(data => {
@@ -45,37 +57,81 @@ export default function DhikrScreen() {
     ...dhikrItems.filter(item => !favorites.includes(item.text))
   ];
 
-  const filteredItems = showFavoritesOnly
+  const filteredItems = (showFavoritesOnly
     ? sortedItems.filter(item => favorites.includes(item.text))
-    : sortedItems;
+    : sortedItems
+  ).filter(item =>
+    item.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>🕊️ Dhikr</Text>
-      <Text style={styles.instructions}>Long press on any dhikr to save it to the top ❤️</Text>
-      <TouchableOpacity style={styles.filterButton} onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}>
-        <Text style={styles.filterButtonText}>{showFavoritesOnly ? 'Show All' : 'Show Favorites Only'}</Text>
-      </TouchableOpacity>
-      {filteredItems.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          onLongPress={() => toggleFavorite(item.text)}
-          style={styles.card}
-        >
-          <Text style={styles.arabic}>{item.arabic}</Text>
-          <Text style={styles.translation}>{item.text}</Text>
-          <Text style={styles.type}>Type: {item.type}</Text>
-          {favorites.includes(item.text) && <Text style={styles.heart}>❤️</Text>}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF5FD' }}>
+      <View style={styles.innerContainer}>
+        <TouchableOpacity onPress={() => router.push('/worship')} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={18} color="#7C3AED" />
+          <Text style={styles.backButtonText}>Back to Worship</Text>
         </TouchableOpacity>
-      ))}
-    </ScrollView>
+
+        <Text style={styles.title}>🕊️ Dhikr</Text>
+        <Text style={styles.instructions}>Long press on any dhikr to save it to the top ❤️</Text>
+
+        <TextInput
+          placeholder="Search dhikr..."
+          placeholderTextColor="#A78BFA"
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <TouchableOpacity style={styles.filterButton} onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}>
+          <Text style={styles.filterButtonText}>
+            {showFavoritesOnly ? 'Show All' : 'Show Favorites Only'}
+          </Text>
+        </TouchableOpacity>
+
+        <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
+          {filteredItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onLongPress={() => toggleFavorite(item.text)}
+              style={styles.card}
+            >
+              <Text style={styles.arabic}>{item.arabic}</Text>
+              <Text style={styles.translation}>{item.text}</Text>
+              <Text style={styles.type}>Type: {item.type}</Text>
+              {favorites.includes(item.text) && <Text style={styles.heart}>❤️</Text>}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  innerContainer: {
+    flex: 1,
     padding: 20,
-    backgroundColor: '#FFF5FD',
+  },
+  scrollArea: {
+    flex: 1,
+    marginTop: 10,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#EBDFF9',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backButtonText: {
+    color: '#7C3AED',
+    fontSize: 14,
+    fontWeight: '600',
   },
   title: {
     fontSize: 24,
@@ -89,13 +145,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontStyle: 'italic',
   },
+  searchInput: {
+    backgroundColor: '#F3E8FF',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    marginBottom: 12,
+    fontSize: 15,
+    color: '#4B0082',
+  },
   filterButton: {
     alignSelf: 'flex-start',
     backgroundColor: '#EBDFF9',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   filterButtonText: {
     color: '#7C3AED',
@@ -131,4 +196,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

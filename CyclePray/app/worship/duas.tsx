@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const duasItems = [
   { text: "O Allah, make this a means of purification.", arabic: "اللَّهُمَّ اجْعَلْهُ سَبَبًا لِلتَّطْهِيرِ", type: "healing" },
@@ -23,6 +33,8 @@ const duasItems = [
 export default function DuasScreen() {
   const [favorites, setFavorites] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     AsyncStorage.getItem('@favorite_duas').then(data => {
@@ -43,37 +55,81 @@ export default function DuasScreen() {
     ...duasItems.filter(item => !favorites.includes(item.text))
   ];
 
-  const filteredItems = showFavoritesOnly
+  const filteredItems = (showFavoritesOnly
     ? sortedItems.filter(item => favorites.includes(item.text))
-    : sortedItems;
+    : sortedItems
+  ).filter(item =>
+    item.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>📿 Du'as</Text>
-      <Text style={styles.instructions}>Long press on any du'a to save it to the top ❤️</Text>
-      <TouchableOpacity style={styles.filterButton} onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}>
-        <Text style={styles.filterButtonText}>{showFavoritesOnly ? 'Show All' : 'Show Favorites Only'}</Text>
-      </TouchableOpacity>
-      {filteredItems.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          onLongPress={() => toggleFavorite(item.text)}
-          style={styles.card}
-        >
-          <Text style={styles.arabic}>{item.arabic}</Text>
-          <Text style={styles.translation}>{item.text}</Text>
-          <Text style={styles.type}>Type: {item.type}</Text>
-          {favorites.includes(item.text) && <Text style={styles.heart}>❤️</Text>}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF5FD' }}>
+      <View style={styles.innerContainer}>
+      <TouchableOpacity onPress={() => router.push('/worship')} style={styles.backButton}>
+      <Ionicons name="arrow-back" size={18} color="#7C3AED" />
+          <Text style={styles.backButtonText}>Back to Worship</Text>
         </TouchableOpacity>
-      ))}
-    </ScrollView>
+
+        <Text style={styles.title}>📿 Du'as</Text>
+        <Text style={styles.instructions}>Long press on any du'a to save it to the top ❤️</Text>
+
+        <TextInput
+          placeholder="Search du'as..."
+          placeholderTextColor="#A78BFA"
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <TouchableOpacity style={styles.filterButton} onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}>
+          <Text style={styles.filterButtonText}>
+            {showFavoritesOnly ? 'Show All' : 'Show Favorites Only'}
+          </Text>
+        </TouchableOpacity>
+
+        <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
+          {filteredItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onLongPress={() => toggleFavorite(item.text)}
+              style={styles.card}
+            >
+              <Text style={styles.arabic}>{item.arabic}</Text>
+              <Text style={styles.translation}>{item.text}</Text>
+              <Text style={styles.type}>Type: {item.type}</Text>
+              {favorites.includes(item.text) && <Text style={styles.heart}>❤️</Text>}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  innerContainer: {
+    flex: 1,
     padding: 20,
-    backgroundColor: '#FFF5FD',
+  },
+  scrollArea: {
+    flex: 1,
+    marginTop: 10,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#EBDFF9',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backButtonText: {
+    color: '#7C3AED',
+    fontSize: 14,
+    fontWeight: '600',
   },
   title: {
     fontSize: 24,
@@ -87,13 +143,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontStyle: 'italic',
   },
+  searchInput: {
+    backgroundColor: '#F3E8FF',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    marginBottom: 12,
+    fontSize: 15,
+    color: '#4B0082',
+  },
   filterButton: {
     alignSelf: 'flex-start',
     backgroundColor: '#EBDFF9',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   filterButtonText: {
     color: '#7C3AED',

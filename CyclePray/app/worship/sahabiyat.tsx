@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+
 
 const sahabiyatItems = [
   { name: "Khadijah bint Khuwaylid", title: "The First Believer", story: "When the Prophet ﷺ came home after the first revelation, shaking with fear and confusion, Khadijah (RA) did not question him. Instead, she wrapped him in a cloak and affirmed his character, saying, 'By Allah, He will never disgrace you.' She took him to her cousin Waraqah ibn Nawfal to seek clarity. Khadijah was not just the first to believe in Islam—she gave her wealth, home, and heart to support the Prophet in the earliest and most difficult days of the mission.", virtue: "Loyalty and Support" },
@@ -21,116 +32,183 @@ const sahabiyatItems = [
 ];
 
 export default function SahabiyatScreen() {
-    const [favorites, setFavorites] = useState<string[]>([]);
-    const [showFavesOnly, setShowFavesOnly] = useState(false);
-  
-    useEffect(() => {
-      AsyncStorage.getItem('@favorite_sahabiyat').then(data => {
-        if (data) setFavorites(JSON.parse(data));
-      });
-    }, []);
-  
-    const toggleFavorite = (name: string) => {
-      const updated = favorites.includes(name)
-        ? favorites.filter(n => n !== name)
-        : [...favorites, name];
-      setFavorites(updated);
-      AsyncStorage.setItem('@favorite_sahabiyat', JSON.stringify(updated));
-    };
-  
-    const sorted = [
-      ...sahabiyatItems.filter(s => favorites.includes(s.name)),
-      ...sahabiyatItems.filter(s => !favorites.includes(s.name)),
-    ];
-  
-    const list = showFavesOnly ? sorted.filter(s => favorites.includes(s.name)) : sorted;
-  
-    return (
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [showFavesOnly, setShowFavesOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    AsyncStorage.getItem('@favorite_sahabiyat').then(data => {
+      if (data) setFavorites(JSON.parse(data));
+    });
+  }, []);
+
+  const toggleFavorite = (name: string) => {
+    const updated = favorites.includes(name)
+      ? favorites.filter(n => n !== name)
+      : [...favorites, name];
+    setFavorites(updated);
+    AsyncStorage.setItem('@favorite_sahabiyat', JSON.stringify(updated));
+  };
+
+  const sorted = [
+    ...sahabiyatItems.filter(s => favorites.includes(s.name)),
+    ...sahabiyatItems.filter(s => !favorites.includes(s.name)),
+  ];
+
+  const filtered = sorted.filter(s =>
+    (!showFavesOnly || favorites.includes(s.name)) &&
+    (s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     s.story.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightBg }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* 🔙 Back Button */}
+        <TouchableOpacity onPress={() => router.push('/worship')} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={18} color="#7C3AED" />
+          <Text style={styles.backButtonText}>Back to Worship</Text>
+        </TouchableOpacity>
+
         <Text style={styles.title}>🌸 Sahabiyāt Stories</Text>
         <Text style={styles.instructions}>Long-press to pin a favourite ❤️</Text>
-  
-        <TouchableOpacity style={styles.filterBtn}
-          onPress={() => setShowFavesOnly(p => !p)}>
-          <Text style={styles.filterTxt}>
-            {showFavesOnly ? 'Show All' : 'Show Favourites Only'}
-          </Text>
+
+        {/* 🔍 Search */}
+        <TextInput
+          placeholder="Search by name or story..."
+          placeholderTextColor="#A78BFA"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={styles.searchInput}
+        />
+
+        {/* ❤️ Filter */}
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setShowFavesOnly(p => !p)}>
+          <Text style={styles.filterTxt}>{showFavesOnly ? 'Show All' : 'Show Favourites Only'}</Text>
         </TouchableOpacity>
-  
-        {list.map((s, i) => (
+
+        {filtered.map((s, i) => (
           <TouchableOpacity
             key={i}
             onLongPress={() => toggleFavorite(s.name)}
             style={[styles.card, favorites.includes(s.name) && styles.cardFav]}
           >
-            {/* heart badge */}
             {favorites.includes(s.name) && <Text style={styles.heart}>❤️</Text>}
-  
+
             <Text style={styles.name}>{s.name} — {s.title}</Text>
             <Text style={styles.story}>{s.story}</Text>
-  
-            {/* virtue badge */}
+
             <View style={styles.badge}>
               <Text style={styles.badgeTxt}>{s.virtue}</Text>
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
-    );
-  }
-  
-  const COLORS = {
-    lavender: '#EBDFF9',
-    deepPurple: '#7C3AED',
-    lightBg: '#FFF5FD',
-    card: '#FFFFFF',
-    cardAlt: '#FFF8FF',
-  };
-  
-  const styles = StyleSheet.create({
-    container: { backgroundColor: COLORS.lightBg, padding: 20 },
-    title:   { fontSize: 24, fontWeight: 'bold', color: COLORS.deepPurple, marginBottom: 6 },
-    instructions: {
-      fontSize: 13, fontStyle: 'italic', color: '#6D28D9',
-      marginBottom: 14,
-    },
-    filterBtn: {
-      alignSelf: 'flex-start',
-      backgroundColor: COLORS.lavender,
-      paddingHorizontal: 16, paddingVertical: 8,
-      borderRadius: 20, marginBottom: 18,
-    },
-    filterTxt: { color: COLORS.deepPurple, fontWeight: '600' },
-  
-    card: {
-      position: 'relative',
-      backgroundColor: COLORS.card,
-      borderRadius: 14,
-      padding: 18,
-      marginBottom: 14,
-  
-      shadowColor: '#BFA2DB',
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 3,
-    },
-    cardFav: { backgroundColor: COLORS.cardAlt },
-  
-    heart: {
-      position: 'absolute',
-      top: 10, right: 12,
-      fontSize: 18,
-    },
-  
-    name:  { fontSize: 16, fontWeight: '600', color: '#4B0082', marginBottom: 8 },
-    story: { fontSize: 14, color: '#444', marginBottom: 12, lineHeight: 20 },
-  
-    badge: {
-      alignSelf: 'flex-start',
-      backgroundColor: COLORS.lavender,
-      paddingHorizontal: 10, paddingVertical: 4,
-      borderRadius: 14,
-    },
-    badgeTxt: { fontSize: 12, color: COLORS.deepPurple, fontWeight: '600' },
-  });
+    </SafeAreaView>
+  );
+}
+
+const COLORS = {
+  lavender: '#EBDFF9',
+  deepPurple: '#7C3AED',
+  lightBg: '#FFF5FD',
+  card: '#FFFFFF',
+  cardAlt: '#FFF8FF',
+};
+
+const styles = StyleSheet.create({
+  container: { padding: 20 },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.lavender,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  backButtonText: {
+    color: COLORS.deepPurple,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: COLORS.deepPurple,
+    marginBottom: 6,
+  },
+  instructions: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: '#6D28D9',
+    marginBottom: 14,
+  },
+  searchInput: {
+    backgroundColor: COLORS.lavender,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    marginBottom: 12,
+    color: '#4B0082',
+  },
+  filterBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.lavender,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 18,
+  },
+  filterTxt: {
+    color: COLORS.deepPurple,
+    fontWeight: '600',
+  },
+  card: {
+    position: 'relative',
+    backgroundColor: COLORS.card,
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 14,
+    shadowColor: '#BFA2DB',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  cardFav: { backgroundColor: COLORS.cardAlt },
+  heart: {
+    position: 'absolute',
+    top: 10,
+    right: 12,
+    fontSize: 18,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4B0082',
+    marginBottom: 8,
+  },
+  story: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.lavender,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 14,
+  },
+  badgeTxt: {
+    fontSize: 12,
+    color: COLORS.deepPurple,
+    fontWeight: '600',
+  },
+});
