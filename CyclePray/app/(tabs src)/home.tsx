@@ -18,7 +18,6 @@ import {
   useFonts as usePlayfairFonts,
   PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
-
 import {
   useFonts as usePoppinsFonts,
   Poppins_400Regular,
@@ -28,7 +27,8 @@ import {
 export default function HomeScreen() {
   const router = useRouter();
   const [missedDays, setMissedDays] = useState(0);
-  const [totalDays, setTotalDays] = useState(10);
+  const [totalDays, setTotalDays] = useState(0);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const STORAGE_KEY = '@period_marked_dates';
 
   const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
@@ -51,12 +51,16 @@ export default function HomeScreen() {
           if (sortedMonths.length > 0) {
             const latest = sortedMonths[0];
             setMissedDays(summary[latest]);
-            const daysInMonth = new Date(`${latest}-01`).getMonth() === 1 ? 28 : 30;
+
+            const [year, month] = latest.split('-');
+            const daysInMonth = new Date(year, month, 0).getDate();
             setTotalDays(daysInMonth);
           }
         }
       } catch (error) {
         console.error('Failed to load summary:', error);
+      } finally {
+        setDataLoaded(true);
       }
     };
 
@@ -81,7 +85,13 @@ export default function HomeScreen() {
           <Text style={styles.subtitle}>“So remember Me; I will remember you.” — Qur'an 2:152</Text>
         </View>
 
-        <PrayerMissedCounter missedDays={missedDays} totalDays={totalDays} />
+        {dataLoaded ? (
+          totalDays > 0 ? (
+            <PrayerMissedCounter missedDays={missedDays} totalDays={totalDays} />
+          ) : (
+            <Text style={styles.noDataText}>No period data yet</Text>
+          )
+        ) : null}
 
         <View style={styles.quickLinks}>
           {[
@@ -228,6 +238,13 @@ const styles = StyleSheet.create({
     color: COLORS.deepPurple,
     textAlign: 'center',
     marginTop: 8,
+  },
+  noDataText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    color: COLORS.textDark,
+    textAlign: 'center',
+    marginVertical: 30,
   },
   quickLinks: {
     flexDirection: 'row',
