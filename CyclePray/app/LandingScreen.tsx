@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,25 +28,31 @@ export default function LandingScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.welcome}>WELCOME TO</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <Image source={require('../assets/images/icon.png')} style={styles.logo} />
-      <Text style={styles.appName}>CyclePray</Text>
+
       <Text style={styles.description}>
-        An app for Muslim women to track periods and stay spiritually connected. 💖
+        A gentle space for Muslim women to track their cycle and stay spiritually connected 💖
       </Text>
 
-      <Text style={styles.inputLabel}>WHAT SHOULD WE CALL YOU?</Text>
+      <Text style={styles.inputLabel}>What should we call you?</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
         value={name}
         onChangeText={setName}
+        placeholderTextColor="#aaa"
       />
 
-      <TouchableOpacity onPress={handleContinue} style={{ borderRadius: 30, overflow: 'hidden', marginTop: 30 }}>
+      <TouchableOpacity
+        onPress={handleContinue}
+        style={{ borderRadius: 30, overflow: 'hidden', marginTop: 30 }}
+      >
         <LinearGradient
-          colors={['#8B5CF6', '#BFA2DB']}
+          colors={['#BFA2DB', '#8B5CF6']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.continueButton}
@@ -51,44 +66,34 @@ export default function LandingScreen() {
 
 const COLORS = {
   primaryPurple: '#BFA2DB',
-  accentPurple: '#D8B4FE',
   deepPurple: '#8B5CF6',
-  lightBackground: '#F3E8FF',
-  textDark: '#333333',
+  background: '#F8F3FF',
+  textDark: '#333',
+  inputBorder: '#D1C4E9',
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightBackground,
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
-  },
-  welcome: {
-    fontSize: 16,
-    color: COLORS.textDark,
-    marginBottom: 10,
+    paddingHorizontal: 24,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 160,
+    height: 160,
     resizeMode: 'contain',
-    marginBottom: 20,
-  },
-  appName: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: COLORS.deepPurple,
     marginBottom: 10,
   },
   description: {
     textAlign: 'center',
     fontSize: 16,
+    fontWeight: '500',
     color: COLORS.textDark,
     marginBottom: 40,
-    paddingHorizontal: 20,
     lineHeight: 24,
+    paddingHorizontal: 10,
   },
   inputLabel: {
     fontSize: 14,
@@ -99,22 +104,25 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     borderWidth: 1,
-    borderColor: COLORS.neutralGray,
-    borderRadius: 10,
-    padding: 12,
+    borderColor: COLORS.inputBorder,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#fff',
     textAlign: 'center',
     fontSize: 16,
+    color: COLORS.textDark,
   },
   continueButton: {
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
-    shadowColor: '#8B5CF6',
+    width: 200,
+    shadowColor: COLORS.deepPurple,
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 6,
   },
   continueButtonText: {
     color: '#fff',
