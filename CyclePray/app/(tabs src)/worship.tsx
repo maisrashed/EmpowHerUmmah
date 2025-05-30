@@ -1,5 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
@@ -7,6 +15,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function WorshipMenuScreen() {
   const router = useRouter();
+  const [userName, setUserName] = useState('');
 
   const categories = [
     { label: 'Dhikr', emoji: '🕊️', route: '/worship/dhikr' },
@@ -16,6 +25,19 @@ export default function WorshipMenuScreen() {
     { label: 'Hadith', emoji: '🧠', route: '/worship/hadith' },
     { label: 'Salawat', emoji: '🌙', route: '/worship/salawat' },
   ];
+
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const name = await AsyncStorage.getItem('@user_name');
+        if (name) setUserName(name);
+      } catch (error) {
+        console.error('Failed to load user name:', error);
+      }
+    };
+
+    fetchName();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
