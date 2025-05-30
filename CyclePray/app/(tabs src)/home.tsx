@@ -29,15 +29,20 @@ export default function HomeScreen() {
   const [missedDays, setMissedDays] = useState(0);
   const [totalDays, setTotalDays] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [userName, setUserName] = useState('');
   const STORAGE_KEY = '@period_marked_dates';
 
   const [playfairLoaded] = usePlayfairFonts({ PlayfairDisplay_700Bold });
   const [poppinsLoaded] = usePoppinsFonts({ Poppins_400Regular, Poppins_600SemiBold });
 
   useEffect(() => {
-    const loadSummary = async () => {
+    const loadData = async () => {
       try {
         const savedData = await AsyncStorage.getItem(STORAGE_KEY);
+        const storedName = await AsyncStorage.getItem('@user_name');
+
+        if (storedName) setUserName(storedName);
+
         if (savedData) {
           const markedDates = JSON.parse(savedData);
           const summary = {};
@@ -58,13 +63,13 @@ export default function HomeScreen() {
           }
         }
       } catch (error) {
-        console.error('Failed to load summary:', error);
+        console.error('Failed to load data:', error);
       } finally {
         setDataLoaded(true);
       }
     };
 
-    loadSummary();
+    loadData();
   }, []);
 
   if (!playfairLoaded || !poppinsLoaded) {
@@ -81,7 +86,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Image source={require('../../assets/images/icon.png')} style={styles.icon} />
-          <Text style={styles.title}>Hi Noor! Your softness is your strength ✨</Text>
+          <Text style={styles.title}>Hi {userName || 'there'}! Your softness is your strength ✨</Text>
           <Text style={styles.subtitle}>“So remember Me; I will remember you.” — Qur'an 2:152</Text>
         </View>
 
