@@ -10,19 +10,19 @@ import {
   Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function LandingScreen() {
   const [name, setName] = useState('');
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const handleContinue = async () => {
     if (name.trim() === '') return;
     try {
       await AsyncStorage.setItem('@user_name', name);
-      await AsyncStorage.setItem('@has_launched_before', 'true'); 
-      navigation.navigate('(tabs src)/home');
+      await AsyncStorage.setItem('@has_launched_before', 'true');
+      router.replace('/(tabs src)/home'); // ✅ navigate to home
     } catch (error) {
       console.error('Error saving name or launch status:', error);
     }
