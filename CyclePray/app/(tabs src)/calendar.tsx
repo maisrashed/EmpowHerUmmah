@@ -16,7 +16,6 @@ import {
   useFonts as usePlayfairFonts,
   PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
-
 import {
   useFonts as usePoppinsFonts,
   Poppins_400Regular,
@@ -26,6 +25,7 @@ import {
 export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState({});
   const [showResumeReminder, setShowResumeReminder] = useState(false);
+  const [userName, setUserName] = useState('');
   const STORAGE_KEY = '@period_marked_dates';
   const router = useRouter();
 
@@ -36,6 +36,7 @@ export default function CalendarScreen() {
 
   useEffect(() => {
     loadMarkedDates();
+    loadUserName();
   }, []);
 
   const loadMarkedDates = async () => {
@@ -46,6 +47,15 @@ export default function CalendarScreen() {
       }
     } catch (error) {
       console.error('Failed to load dates:', error);
+    }
+  };
+
+  const loadUserName = async () => {
+    try {
+      const name = await AsyncStorage.getItem('@user_name');
+      if (name) setUserName(name);
+    } catch (error) {
+      console.error('Failed to load name:', error);
     }
   };
 
@@ -96,7 +106,7 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Calendar, Noor</Text>
+        <Text style={styles.title}>Your Calendar, {userName || '...'} </Text>
       </View>
 
       <Calendar
@@ -127,7 +137,7 @@ export default function CalendarScreen() {
       {showResumeReminder && (
         <View style={styles.bannerReminder}>
           <Text style={styles.bannerText}>
-            🌸 It’s time to resume your prayers today, Noor. May Allah accept them!
+            🌸 It’s time to resume your prayers today, {userName || 'friend'}. May Allah accept them!
           </Text>
         </View>
       )}
