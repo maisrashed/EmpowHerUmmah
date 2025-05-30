@@ -96,26 +96,4 @@ const styles = StyleSheet.create({
   },
   card: {
     width: screenWidth * 0.4,
-    height: screenWidth * 0.4,
-    borderRadius: 24,
-    padding: 16,
-    margin: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#BFA2DB',
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  emoji: {
-    fontSize: 32,
-    marginBottom: 10,
-  },
-  cardText: {
-    fontSize: 15,
-    color: COLORS.textDark,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-});
+    h
