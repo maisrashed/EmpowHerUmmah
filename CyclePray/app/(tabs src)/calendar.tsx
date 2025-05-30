@@ -203,4 +203,21 @@ const styles = StyleSheet.create({
   finishButton: {
     paddingVertical: 15,
     borderRadius: 30,
-   
+    alignItems: 'center',
+  },
+  finishButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+  saveButton: {
+    paddingVertical: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+});
